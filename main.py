@@ -30,13 +30,14 @@ kv_file_count = 0
 for root, _, files in os.walk(os.getcwd()):
     for file in files:
         if file.endswith(".kv"):
-            Builder.load_file(root + "\\" + file)
+            divider = "\\" if os.name == 'nt' else '/'
+            Builder.load_file(root + divider + file)
             kv_file_count += 1
 
 print(f"Found and loaded {kv_file_count} .kv files!")
 
 class StreamDeckApp(App):
-    is_debug_mode = True
+    is_debug_mode = os.name == 'nt' # Debug mode on windows only
 
     def build(self):
         if not self.is_debug_mode: Window.fullscreen = True
