@@ -1,0 +1,21 @@
+<NetworksRecycleView>:
+    viewclass: 'SelectableNetworkLabel'
+    SelectableRecycleBoxLayout:
+        default_size: None, dp(56)  
+        default_size_hint: 1, None
+        size_hint_y: None
+        height: self.minimum_height
+        orientation: 'vertical'
+        multiselect: False
+        touch_multiselect: False
+
+<SelectableNetworkLabel>:
+    canvas.before:
+        Color:
+            rgba: (.5, .5, .5, .5) if self.selected else (0, 0, 0, 0)
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [15]
+    Label:
+        text: root.text

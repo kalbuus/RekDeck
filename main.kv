@@ -1,0 +1,18 @@
+#:import SlideTransition kivy.uix.screenmanager.SlideTransition
+
+<BaseFloatLayout>:
+    WifiLayout:
+        id: wifi_layout
+        orientation: 'vertical'
+
+        ScreenManager:
+            id: wifi_screen_manager
+            transition: SlideTransition(duration=0.75)
+            
+            canvas.before:
+                Color:
+                    rgba: 0.1, 0.1, 0.1, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+    

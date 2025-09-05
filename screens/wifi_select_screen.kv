@@ -1,0 +1,32 @@
+<WifiSelectScreen>:
+    name: "wifi_select"
+
+    BoxLayout:
+        id: wifi_select_layout
+        canvas.before:
+            Color:
+                rgba: .1, .1, .1, 1
+            Rectangle:
+                pos: (0, 0)
+                size: self.size
+    Label:
+        text: "Давайте подключим ваш Deck к интернету"
+        font_size: 30
+        text_size: self.size
+        halign: 'left'
+        valign: 'middle'
+        pos_hint: {"center_x":.55, "center_y":.87}
+    
+    BoxLayout:
+        id: wifi_recycle_view_layout
+        size_hint: .9, .7
+        pos_hint: {"center_x":.5, "center_y":.4}
+        canvas.before:
+            Color:
+                rgba: .05, .05, .05, 1
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [15]
+        NetworksRecycleView:
+            id: networkRecycleView

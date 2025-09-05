@@ -1,0 +1,58 @@
+from kivy.config import Config
+Config.set('modules', 'cursor', '0')
+
+from kivy.core.window import Window
+Window.show_cursor = False
+
+from kivy.app import App
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.boxlayout import BoxLayout
+from kivy.lang.builder import Builder
+from kivy.factory import Factory
+
+from screens.wifi_select_screen import WifiSelectScreen
+from screens.wifi_password_screen import WifiPasswordScreen
+from widgets.networks_recycle_view import NetworksRecycleView, SelectableNetworkLabel
+
+import asyncio
+import os
+
+Window.size = (800,480)
+
+class BaseFloatLayout(FloatLayout):
+    pass
+
+class WifiLayout(BoxLayout):
+    pass
+
+
+kv_file_count = 0
+for root, _, files in os.walk(os.getcwd()):
+    for file in files:
+        if file.endswith(".kv"):
+            Builder.load_file(root + "\\" + file)
+            kv_file_count += 1
+
+print(f"Found and loaded {kv_file_count} .kv files!")
+
+class StreamDeckApp(App):
+    is_debug_mode = True
+
+    def build(self):
+        if not self.is_debug_mode: Window.fullscreen = True
+        self.root = BaseFloatLayout()
+
+        sm = self.root.ids.wifi_screen_manager
+        sm.add_widget(Factory.WifiSelectScreen(name="wifi_select"))
+        sm.add_widget(Factory.WifiPasswordScreen(name="wifi_password"))
+
+        sm.current = "wifi_select"
+        return self.root
+
+
+def main():
+    asyncio.run(StreamDeckApp().async_run(async_lib="asyncio"))
+
+
+if __name__ == '__main__':
+    main()
