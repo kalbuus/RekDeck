@@ -1,0 +1,49 @@
+<WifiConnectionScreen>:
+    name: "wifi_connect"
+
+    FloatLayout:
+        BoxLayout:
+            id: wifi_connect_layout
+            canvas.before:
+                Color:
+                    rgba: .1, .1, .1, 1
+                Rectangle:
+                    pos: (0, 0)
+                    size: self.size
+
+        Image:
+            source: 'assets/wifi_connection_screen/loading.gif'
+            pos_hint: {"center_x":.5, "center_y":.3}
+            anim_delay: 0.02
+
+        Label:
+            text: "Connecting..."
+            pos_hint: {"center_x":.5, "center_y":.5}
+            font_size: 24
+        
+        BoxLayout:
+            id: wifi_connect_popup
+            size_hint: 0.7, 0.6
+            pos_hint: {"center_x":.5, "center_y":.5}
+            canvas.before:
+                Color:
+                    rgba: [.2, .2, .2, 1] if root.show_popup else [0, 0, 0, 0]
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [15]
+        
+        Label:
+            text: root.popup_text if root.show_popup else ""
+            size_hint: 0.7, 0.5
+            pos_hint: {"center_x":.5, "center_y":.65}
+            font_size: 30
+        
+        Button:
+            text: "Назад"
+            size_hint: [0.4, 0.2] if root.show_popup else [0, 0]
+            opacity: 1 if root.show_popup else 0
+            disabled: False if root.show_popup else True
+            pos_hint: {"center_x":.5, "center_y":.4}
+            
+    

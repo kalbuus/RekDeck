@@ -44,13 +44,11 @@ class VirtualKeyboard(BoxLayout):
         lang_btn = KeyboardButton(text="LANG", on_press=self.switch_language, size_hint=(0.3, 1))
         space_btn = KeyboardButton(text=" ", on_press=lambda x: self.insert_char(" "), size_hint=(1, 1))
         back_btn = KeyboardButton(text="BACKSPACE", on_press=self.backspace, size_hint=(0.6, 1))
-        done_btn = KeyboardButton(text="DONE", on_press=self.done, size_hint=(0.5, 1))
 
         control_row.add_widget(shift_btn)
         control_row.add_widget(lang_btn)
         control_row.add_widget(space_btn)
         control_row.add_widget(back_btn)
-        control_row.add_widget(done_btn)
 
         self.add_widget(control_row)
 

@@ -40,8 +40,11 @@ class SelectableNetworkLabel(RecycleDataViewBehavior, BoxLayout):
         if super(SelectableNetworkLabel, self).on_touch_up(touch):
             return True
         if self.collide_point(*touch.pos) and self.selectable:
-            sm = App.get_running_app().root.ids.wifi_screen_manager
-            sm.current = "wifi_password" if self.has_password else "wifi_select"
+            app = App.get_running_app()
+            sm = app.root.ids.wifi_screen_manager
+            app.wifi_current_ssid = self.text
+            app.wifi_current_has_password = self.has_password
+            sm.current = "wifi_password" if self.has_password else "wifi_connect"
             return self.parent.select_with_touch(self.index, touch)
 
     def apply_selection(self, rv, index, is_selected):

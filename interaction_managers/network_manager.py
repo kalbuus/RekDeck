@@ -26,3 +26,28 @@ def scan_wifi(is_debug: bool):
         })
 
     return networks
+
+def is_connected(host="8.8.8.8", port=53, timeout=3):
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except OSError:
+        return False
+
+
+def connect_wifi(ssid, password=None):
+    try:
+        if password:
+            result = subprocess.run(
+                ["nmcli", "dev", "wifi", "connect", ssid, "password", password],
+                capture_output=True, text=True, check=True
+            )
+        else:
+            result = subprocess.run(
+                ["nmcli", "dev", "wifi", "connect", ssid],
+                capture_output=True, text=True, check=True
+            )
+        return True, result.stdout.strip()
+    except subprocess.CalledProcessError as e:
+        return False, e.stderr.strip()

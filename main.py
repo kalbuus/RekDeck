@@ -9,10 +9,13 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.lang.builder import Builder
 from kivy.factory import Factory
+from kivy.properties import StringProperty, BooleanProperty
 
 from screens.wifi_select_screen import WifiSelectScreen
 from screens.wifi_password_screen import WifiPasswordScreen
+from screens.wifi_connection_screen import WifiConnectionScreen
 from widgets.networks_recycle_view import NetworksRecycleView, SelectableNetworkLabel
+from interaction_managers.network_manager import is_connected
 
 import asyncio
 import os
@@ -38,6 +41,9 @@ print(f"Found and loaded {kv_file_count} .kv files!")
 
 class StreamDeckApp(App):
     is_debug_mode = os.name == 'nt' # Debug mode on windows only
+    wifi_current_ssid = StringProperty()
+    wifi_current_has_password = BooleanProperty()
+    wifi_current_password = StringProperty()
 
     def build(self):
         if not self.is_debug_mode: Window.fullscreen = True
@@ -46,8 +52,12 @@ class StreamDeckApp(App):
         sm = self.root.ids.wifi_screen_manager
         sm.add_widget(Factory.WifiSelectScreen(name="wifi_select"))
         sm.add_widget(Factory.WifiPasswordScreen(name="wifi_password"))
+        sm.add_widget(Factory.WifiConnectionScreen(name="wifi_connect"))
 
-        sm.current = "wifi_select"
+        
+        #starting_page = "wifi_connect" if is_connected() else "wifi_select"
+        starting_page = "wifi_select"
+        sm.current = starting_page
         return self.root
 
 
