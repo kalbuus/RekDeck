@@ -1,0 +1,25 @@
+<MainLayout>:
+    orientation: 'vertical'
+    BoxLayout:
+        id: top_layout
+        size_hint_y: 3
+        canvas.before:
+            Color:
+                rgba: 0.149, 0.156, 0.231, 1
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [20]
+        DeckArea:
+            id: deck_area
+    BoxLayout:
+        id: bottom_layout
+        size_hint_y: 2
+        canvas.before:
+            Color:
+                rgba: 0.7, 0.4, 0.3, 1
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [20]
+        

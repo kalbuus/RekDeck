@@ -32,7 +32,7 @@ class WifiLayout(BoxLayout):
 kv_file_count = 0
 for root, _, files in os.walk(os.getcwd()):
     for file in files:
-        if file.endswith(".kv"):
+        if file.endswith(".kv") and "desktop_app" not in root:
             divider = "\\" if os.name == 'nt' else '/'
             Builder.load_file(root + divider + file)
             kv_file_count += 1
