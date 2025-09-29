@@ -5,6 +5,11 @@ from kivy.clock import Clock
 from kivy.animation import Animation
 
 class DeckButton(Button):
+    image_source = ObjectProperty(None)
+    emoji = ObjectProperty(None)
+    def get_hsv_color(self):
+        # TODO: реализовать HSV-алгоритм, пока просто синий
+        return (0.1, 0.6, 0.9, 1)
     grid_x = NumericProperty(0)
     grid_y = NumericProperty(0)
     grid_w = NumericProperty(1)
@@ -17,26 +22,38 @@ class DeckButton(Button):
         self.size_hint = (None, None)
         self.update_pos_size()
 
-        with self.canvas.before:
-            Color(0.1, 0.6, 0.9, 1 if self.selected else 0.8)
-            self.bg_rect = Rectangle(pos=self.pos, size=self.size)
-
-        self.bind(pos=self.update_graphics, size=self.update_graphics)
-
         self.dragging = False
         self.start_touch = None
         self.prev_grid_x = self.grid_x
         self.prev_grid_y = self.grid_y
 
-    def update_pos_size(self):
-        self.size = (self.grid_w * self.grid_widget.cell_size,
-                     self.grid_h * self.grid_widget.cell_size)
+        # Автоматически обновлять размер и позицию при изменении grid_widget
+        if self.grid_widget:
+            self._bind_to_grid_widget(self.grid_widget)
+
+    def on_grid_widget(self, instance, value):
+        # Если grid_widget меняется динамически
+        self._bind_to_grid_widget(value)
+        self.update_pos_size()
+
+    def _bind_to_grid_widget(self, grid_widget):
+        # Отписаться от предыдущего, если был
+        if hasattr(self, '_grid_widget_binds'):
+            for prop, uid in self._grid_widget_binds:
+                grid_widget.unbind_uid(prop, uid)
+        self._grid_widget_binds = []
+        if grid_widget:
+            for prop in ('width', 'height', 'cols', 'rows', 'pos', 'center_x', 'center_y'):
+                uid = grid_widget.fbind(prop, self.update_pos_size)
+                self._grid_widget_binds.append((prop, uid))
+
+    def update_pos_size(self, *args):
+        if not self.grid_widget or self.grid_widget.cols == 0:
+            return
+        cell_size = self.grid_widget.width / self.grid_widget.cols
+        self.size = (self.grid_w * cell_size, self.grid_h * cell_size)
         px, py = self.grid_widget.grid_to_pixel(self.grid_x, self.grid_y)
         self.pos = (px, py)
-
-    def update_graphics(self, *args):
-        self.bg_rect.pos = self.pos
-        self.bg_rect.size = self.size
 
     def _bring_to_front(self, dt):
         parent = self.parent
@@ -73,8 +90,15 @@ class DeckButton(Button):
             touch.ungrab(self)
             if self.dragging:
                 self.dragging = False
-                gx = round((self.x - self.grid_widget.x) / self.grid_widget.cell_size)
-                gy = round((self.y - self.grid_widget.y) / self.grid_widget.cell_size)
+                # Корректно вычисляем gx, gy относительно центра сетки
+                grid = self.grid_widget
+                cell_size = grid.width / grid.cols if grid.cols else 1
+                grid_width = cell_size * grid.cols
+                grid_height = cell_size * grid.rows
+                left = grid.parent.center_x - grid_width / 2
+                bottom = grid.parent.center_y - grid_height / 2
+                gx = round((self.x - left) / cell_size)
+                gy = round((self.y - bottom) / cell_size)
 
                 parent = self.parent
                 inside = self.grid_widget.inside_bounds(gx, gy, self.grid_w, self.grid_h)

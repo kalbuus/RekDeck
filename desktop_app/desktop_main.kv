@@ -1,6 +1,6 @@
 <MainLayout>:
     orientation: 'vertical'
-    BoxLayout:
+    FloatLayout:
         id: top_layout
         size_hint_y: 3
         canvas.before:
@@ -12,6 +12,8 @@
                 radius: [20]
         DeckArea:
             id: deck_area
+            size_hint: 0.6, 0.9
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
     BoxLayout:
         id: bottom_layout
         size_hint_y: 2
