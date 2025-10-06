@@ -11,9 +11,9 @@ class DeckArea(FloatLayout):
         self.add_widget(self.grid)
 
         # Кнопки спавнятся только внутри сетки (от 0,0 до cols-1,rows-1)
-        self.add_widget(DeckButton(emoji="🍌", grid_x=0, grid_y=0, grid_w=1, grid_h=1, grid_widget=self.grid))
-        self.add_widget(DeckButton(emoji="🍌", grid_x=1, grid_y=0, grid_w=2, grid_h=1, grid_widget=self.grid))
-        self.add_widget(DeckButton(emoji="🍌", grid_x=3, grid_y=1, grid_w=2, grid_h=2, grid_widget=self.grid))
+        self.add_widget(DeckButton(emoji="😀", hue=0.1, grid_x=0, grid_y=0, grid_w=1, grid_h=1, grid_widget=self.grid))
+        self.add_widget(DeckButton(emoji="✨", hue=0.4, grid_x=1, grid_y=0, grid_w=2, grid_h=1, grid_widget=self.grid))
+        self.add_widget(DeckButton(emoji="⭐", hue=0.6, grid_x=3, grid_y=1, grid_w=2, grid_h=2, grid_widget=self.grid))
 
     def check_collision(self, btn, gx, gy, gw, gh):
         for child in self.children:

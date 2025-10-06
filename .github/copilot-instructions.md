@@ -1,4 +1,4 @@
-# Copilot Instructions for UltimateKBDeck
+# Copilot Instructions for RekDeck
 
 ## Project Overview
 This is a cross-platform Kivy-based application for creating a streamdeck device using raspberry pi as the main screen, and pc as a controller. The codebase is organized for both raspberry pi app and desktop controller app, with clear separation of UI, logic, and assets.

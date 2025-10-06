@@ -1,31 +1,66 @@
-from kivy.uix.button import Button
-from kivy.properties import NumericProperty, BooleanProperty, ObjectProperty
+from kivy.uix.widget import Widget
+from kivymd.uix.behaviors import HoverBehavior
+from kivy.core.text import Label as CoreLabel
+from kivy.properties import NumericProperty, BooleanProperty, ObjectProperty, StringProperty, ListProperty
 from kivy.graphics import Color, Rectangle
 from kivy.clock import Clock
 from kivy.animation import Animation
 
-class DeckButton(Button):
+class DeckButton(Widget, HoverBehavior):
     image_source = ObjectProperty(None)
-    emoji = ObjectProperty(None)
-    def get_hsv_color(self):
-        # TODO: реализовать HSV-алгоритм, пока просто синий
-        return (0.1, 0.6, 0.9, 1)
+    emoji = ObjectProperty('')
+    hue = NumericProperty(0.1)
+    selected = BooleanProperty(False)
+    anim_color = ObjectProperty([0.1, 0.6, 0.9, 1])
+
+    text = StringProperty("x")
+    font_name = StringProperty("seguiemj")
+    font_size = NumericProperty(32)
+
+    texture = ObjectProperty(None)
+    texture_size = ListProperty([0, 0])
+
+    def get_hsv_color(self, selected=None):
+        import colorsys
+        h = getattr(self, 'hue', 0.1)
+        s = 0.4
+        if selected is None:
+            selected = self.selected
+        v = 0.5 if selected else 0.8
+        r, g, b = colorsys.hsv_to_rgb(h, s, v)
+        return [r, g, b, 1]
+
+    def on_enter(self):
+        from kivy.animation import Animation
+        Animation.cancel_all(self, 'anim_color')
+        Animation(anim_color=self.get_hsv_color(True), d=0.25, t='out_quad').start(self)
+
+    def on_leave(self):
+        from kivy.animation import Animation
+        Animation.cancel_all(self, 'anim_color')
+        Animation(anim_color=self.get_hsv_color(False), d=0.25, t='out_quad').start(self)
     grid_x = NumericProperty(0)
     grid_y = NumericProperty(0)
     grid_w = NumericProperty(1)
     grid_h = NumericProperty(1)
-    selected = BooleanProperty(False)
     grid_widget = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.size_hint = (None, None)
         self.update_pos_size()
+        self.anim_color = self.get_hsv_color()
 
         self.dragging = False
         self.start_touch = None
         self.prev_grid_x = self.grid_x
         self.prev_grid_y = self.grid_y
+
+        # Text rendering
+        self.texture_update()  # чтобы текст появился сразу
+        # при изменении текста или размера пересоздаём текстуру
+        self.bind(text=lambda *_: self.texture_update())
+        self.bind(font_size=lambda *_: self.texture_update())
 
         # Автоматически обновлять размер и позицию при изменении grid_widget
         if self.grid_widget:
@@ -122,3 +157,13 @@ class DeckButton(Button):
                     anim.start(self)
                 return True
         return super().on_touch_up(touch)
+    
+    def texture_update(self):
+        label = CoreLabel(
+            text=self.text,
+            font_name=self.font_name,
+            font_size=self.font_size
+        )
+        label.refresh()
+        self.texture = label.texture
+        self.texture_size = list(label.texture.size)

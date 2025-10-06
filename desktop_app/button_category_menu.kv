@@ -1,0 +1,54 @@
+<ButtonTypeItem>:
+    text: root.type_name
+    size_hint_y: None
+    height: 48
+    background_color: 0.2, 0.6, 0.8, 1
+    color: 1, 1, 1, 1
+
+<ButtonCategoryItem>:
+    orientation: 'vertical'
+    header_btn: header_btn
+    types_box: types_box
+    size_hint_y: None
+    height: root.height
+    BoxLayout:
+        size_hint_y: None
+        height: 48
+        Button:
+            id: header_btn
+            text: root.category_name
+            on_release: root.toggle()
+            background_color: 0.4, 0.4, 0.6, 1
+            color: 1, 1, 1, 1
+    BoxLayout:
+        id: types_box
+        orientation: 'vertical'
+        size_hint_y: None
+        height: root.types_box.height
+
+<ButtonCategoryMenu>:
+    size_hint: 1, 1
+    background_color: 0, 0, 0, 0
+    auto_dismiss: True
+    Scatter:
+        id: scatter_X_button
+        do_rotation: False
+        do_scale: False
+        AnimatedPlusButton:
+            text: 'x'
+            size_hint: None, None
+            size: self.parent.size[0] * 0.1, self.parent.size[0] * 0.1
+            pos: 20, 20
+            background_normal: ''
+            background_color: [0, 0, 0, 0]
+            font_size: self.height * 0.6
+            start_color: [0.565, 0.365, 0.384, 1]
+            anim_color: self.start_color
+            canvas.before:
+                Color:
+                    rgba: self.anim_color
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [self.height * 0.3,]
+    

@@ -1,0 +1,49 @@
+[
+  {
+    "category": "Системные",
+    "buttons": [
+      {
+        "color": 0.6,
+        "emoji": "🔌",
+        "icon": "",
+        "display_name": "Power off",
+        "size": "1x1",
+        "script": "scripts/power_off.py"
+      },
+      {
+        "color": 0.3,
+        "emoji": "",
+        "icon": "lock.png",
+        "display_name": "To lockscreen",
+        "size": "1x1",
+        "script": "scripts/lock_screen.py"
+      }
+    ]
+  },
+  {
+    "category": "Медиа",
+    "buttons": [
+      {
+        "color": 0.5,
+        "emoji": "⏯",
+        "icon": "",
+        "display_name": "Play/Pause",
+        "size": "2x1",
+        "script": "scripts/play_pause.py"
+      }
+    ]
+  },
+  {
+    "category": "Прочее",
+    "buttons": [
+      {
+        "color": 16776960,
+        "emoji": "😀",
+        "icon": "",
+        "display_name": "Custom Macro",
+        "size": "1x2",
+        "script": "scripts/custom_macro.py"
+      }
+    ]
+  }
+]
