@@ -1,47 +1,58 @@
 [
   {
-    "category": "Системные",
+    "category_id": "system",
+    "category_display_name": "Системные",
     "buttons": [
       {
+        "id": "power_off",
         "color": 0.6,
         "emoji": "🔌",
         "icon": "",
-        "display_name": "Power off",
-        "size": "1x1",
+        "display_name": "Выключить",
+        "size_x": 1,
+        "size_y": 1,
         "script": "scripts/power_off.py"
       },
       {
+        "id": "lockscreen",
         "color": 0.3,
         "emoji": "",
         "icon": "lock.png",
-        "display_name": "To lockscreen",
-        "size": "1x1",
+        "display_name": "Заблокировать",
+        "size_x": 1,
+        "size_y": 1,
         "script": "scripts/lock_screen.py"
       }
     ]
   },
   {
-    "category": "Медиа",
+    "category_id": "media",
+    "category_display_name": "Медиа",
     "buttons": [
       {
+        "id": "play_pause",
         "color": 0.5,
         "emoji": "⏯",
         "icon": "",
-        "display_name": "Play/Pause",
-        "size": "2x1",
+        "display_name": "Старт/Стоп",
+        "size_x": 2,
+        "size_y": 1,
         "script": "scripts/play_pause.py"
       }
     ]
   },
   {
-    "category": "Прочее",
+    "category_id": "other",
+    "category_display_name": "Прочее",
     "buttons": [
       {
-        "color": 16776960,
+        "id": "custom",
+        "color": 0.7,
         "emoji": "😀",
         "icon": "",
-        "display_name": "Custom Macro",
-        "size": "1x2",
+        "display_name": "Собственный",
+        "size_x": 1,
+        "size_y": 2,
         "script": "scripts/custom_macro.py"
       }
     ]
