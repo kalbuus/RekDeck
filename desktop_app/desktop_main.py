@@ -32,6 +32,13 @@ from button_category_menu import ButtonCategoryMenu
 from button_types_util import buttonTypesUtilInstance
 
 class MainLayout(BoxLayout):
+    @property
+    def app(self):
+        from kivy.app import App
+        return App.get_running_app()
+
+    def get_last_selected_button(self):
+        return self.app.get_last_selected_button()
     overlay_menu = ObjectProperty(None, allownone=True)
     deck_area = ObjectProperty(None)
 
@@ -61,6 +68,19 @@ class AppIcon(pystray.Icon):
             print("Mouse Button Pressed")
 
 class MainApp(App):
+    last_selected_button = ObjectProperty(None)
+
+    def set_last_selected_button(self, btn):
+        self.last_selected_button = btn
+        self.update_settings()
+    
+    def update_settings(self):
+        if self.last_selected_button == None: return
+        self.layout.ids.hue_slider.value = self.last_selected_button.hue
+
+    def get_last_selected_button(self):
+        return self.last_selected_button
+    
     def build(self):
         self.layout = MainLayout()
         self.tray_icon = None

@@ -8,6 +8,7 @@
         "color": 0.6,
         "emoji": "🔌",
         "icon": "",
+        "icon_stretch": false,
         "display_name": "Выключить",
         "size_x": 1,
         "size_y": 1,
@@ -17,11 +18,23 @@
         "id": "lockscreen",
         "color": 0.3,
         "emoji": "",
-        "icon": "lock.png",
+        "icon": "assets/world.png",
+        "icon_stretch": false,
         "display_name": "Заблокировать",
         "size_x": 1,
         "size_y": 1,
         "script": "scripts/lock_screen.py"
+      },
+      {
+        "id": "calc_pc",
+        "color": 0.8,
+        "emoji": "",
+        "icon": "assets/calculator.png",
+        "icon_stretch": false,
+        "display_name": "Открыть калькулятор",
+        "size_x": 2,
+        "size_y": 1,
+        "script": "scripts/calculator.py"
       }
     ]
   },
@@ -34,6 +47,7 @@
         "color": 0.5,
         "emoji": "⏯",
         "icon": "",
+        "icon_stretch": false,
         "display_name": "Старт/Стоп",
         "size_x": 2,
         "size_y": 1,
@@ -50,6 +64,7 @@
         "color": 0.7,
         "emoji": "😀",
         "icon": "",
+        "icon_stretch": false,
         "display_name": "Собственный",
         "size_x": 1,
         "size_y": 2,

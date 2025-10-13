@@ -3,23 +3,32 @@
     canvas.before:
         # Тень (BoxShadow)
         Color:
-            rgba: 0, 0, 0, 0.2
-        RoundedRectangle:
-            pos: self.x + dp(3), self.y - dp(2)
-            size: self.width - dp(2), self.height - dp(2)
-            radius: [35]
-            #radius: [min(self.width, self.height) * 0.22,]
+            rgba: 0, 0, 0, 0.4
+        BoxShadow:
+            pos: self.pos
+            size: self.size
+            offset: -0, -6
+            spread_radius: -6, -9
+            border_radius: [35, 35, 35, 35]
+            blur_radius: 20
         # Основной цвет кнопки
         Color:
             rgba: self.anim_color if hasattr(self, 'anim_color') else (0.1, 0.6, 0.9, 1)
         RoundedRectangle:
-            pos: self.pos[0] + 2.5, self.pos[1] + 2.5
-            size: self.size[0] - 5, self.size[1] - 5
+            pos: self.pos[0] + 5, self.pos[1] + 5
+            size: self.size[0] - 10, self.size[1] - 10
             radius: [35]
-            #radius: [min(self.width, self.height) * 0.2,]
     canvas.after:
+        # Иконка, если задана
         Color:
-            rgba: 1, 1, 1, 1
+            rgba: (1, 1, 1, 1) if self.image_source else (0, 0, 0, 0)
+        Rectangle:
+            source: self.image_source if self.image_source else ''
+            size: [self.size[0] * 0.7, self.size[1] * 0.7] if self.icon_fit_button else [min(self.size[0], self.size[1]) * 0.7, min(self.size[0], self.size[1]) * 0.7]
+            pos: [self.center_x - self.size[0]*0.35, self.center_y - self.size[1]*0.35] if self.icon_fit_button else [self.center_x - min(self.size[0], self.size[1])*0.35, self.center_y - min(self.size[0], self.size[1])*0.35]
+        # Эмодзи/текст
+        Color:
+            rgba: (1, 1, 1, 1) if not self.image_source else (1, 1, 1, 0.0)
         Rectangle:
             texture: self.texture
             size: self.texture_size

@@ -26,7 +26,8 @@ class ButtonTypeItem(Button):
             print("No button place found")
             return
         deck_area.add_deck_button(
-            emoji=button_info['emoji'], hue=button_info['color'], 
+            emoji=button_info['emoji'], image_source=button_info['icon'],
+            hue=button_info['color'], 
             grid_x=free_spot[0], grid_y=free_spot[1], 
             grid_w=button_info["size_x"], grid_h=button_info["size_y"]
         )

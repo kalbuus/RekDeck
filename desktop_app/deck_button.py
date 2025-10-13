@@ -5,13 +5,18 @@ from kivy.properties import NumericProperty, BooleanProperty, ObjectProperty, St
 from kivy.graphics import Color, Rectangle
 from kivy.clock import Clock
 from kivy.animation import Animation
+from kivy.app import App
 
 class DeckButton(Widget, HoverBehavior):
+    def on_hue(self, instance, value):
+        # Автоматически обновлять цвет при изменении hue
+        self.anim_color = self.get_hsv_color()
     image_source = ObjectProperty(None)
     emoji = ObjectProperty('')
     hue = NumericProperty(0.1)
     selected = BooleanProperty(False)
     anim_color = ObjectProperty([0.1, 0.6, 0.9, 1])
+    icon_fit_button = BooleanProperty(False)
 
     text = StringProperty("x")
     font_name = StringProperty("seguiemj")
@@ -107,6 +112,7 @@ class DeckButton(Widget, HoverBehavior):
             self.prev_grid_x, self.prev_grid_y = self.grid_x, self.grid_y
             Clock.schedule_once(self._bring_to_front, 0)
             touch.grab(self)
+            App.get_running_app().set_last_selected_button(self)
             return True
         return super().on_touch_down(touch)
 
