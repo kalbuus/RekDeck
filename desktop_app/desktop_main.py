@@ -30,6 +30,7 @@ from animated_plus_button import AnimatedPlusButton
 from button_category_menu import ButtonCategoryMenu
 
 from button_types_util import buttonTypesUtilInstance
+from ws_server import WsServer
 
 class MainLayout(BoxLayout):
     @property
@@ -69,6 +70,7 @@ class AppIcon(pystray.Icon):
 
 class MainApp(App):
     last_selected_button = ObjectProperty(None)
+    layout = None
 
     def set_last_selected_button(self, btn):
         self.last_selected_button = btn
@@ -83,6 +85,12 @@ class MainApp(App):
     
     def build(self):
         self.layout = MainLayout()
+        # Запускаем WebSocket сервер
+        self.ws_server = WsServer(host='127.0.0.1', port=6789, app=self)
+        try:
+            self.ws_server.start()
+        except Exception as e:
+            print('Failed to start ws server:', e)
         self.tray_icon = None
         Window.bind(on_request_close=self.on_request_close)
         # Найти плюс-кнопку и добавить обработчик
@@ -113,7 +121,10 @@ class MainApp(App):
         return True  # не даём приложению закрыться
 
     def get_deck_area(self):
-        return self.layout.deck_area
+        if self.layout != None:
+            return self.layout.deck_area
+        else:
+            return None
     
     def create_tray_icon(self):
         """Создаём иконку в системном трее"""
@@ -133,6 +144,11 @@ class MainApp(App):
 
     def quit_app(self, icon, item):
         # Завершить приложение полностью
+        try:
+            if hasattr(self, 'ws_server') and self.ws_server:
+                self.ws_server.stop()
+        except Exception:
+            pass
         icon.stop()
         self.stop()
 

@@ -29,7 +29,8 @@ class ButtonTypeItem(Button):
             emoji=button_info['emoji'], image_source=button_info['icon'],
             hue=button_info['color'], 
             grid_x=free_spot[0], grid_y=free_spot[1], 
-            grid_w=button_info["size_x"], grid_h=button_info["size_y"]
+            grid_w=button_info["size_x"], grid_h=button_info["size_y"],
+            button_id=self.button_id
         )
 
 class ButtonCategoryItem(BoxLayout):

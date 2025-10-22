@@ -11,6 +11,8 @@ class DeckButton(Widget, HoverBehavior):
     def on_hue(self, instance, value):
         # Автоматически обновлять цвет при изменении hue
         self.anim_color = self.get_hsv_color()
+        area = App.get_running_app().get_deck_area()
+        if area: area.save_buttons_to_json()
     image_source = ObjectProperty(None)
     emoji = ObjectProperty('')
     hue = NumericProperty(0.1)
@@ -24,6 +26,8 @@ class DeckButton(Widget, HoverBehavior):
 
     texture = ObjectProperty(None)
     texture_size = ListProperty([0, 0])
+
+    button_id = StringProperty(None)
 
     def get_hsv_color(self, selected=None):
         import colorsys
@@ -156,6 +160,8 @@ class DeckButton(Widget, HoverBehavior):
 
                     def _on_complete(anim, widget):
                         self.grid_x, self.grid_y = gx, gy
+                        area = App.get_running_app().get_deck_area()
+                        if area: area.save_buttons_to_json()
                         self.update_pos_size()
 
                     anim = Animation(x=tx, y=ty, d=0.12, t='out_quad')

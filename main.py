@@ -53,7 +53,6 @@ class StreamDeckApp(App):
         sm.add_widget(Factory.WifiSelectScreen(name="wifi_select"))
         sm.add_widget(Factory.WifiPasswordScreen(name="wifi_password"))
         sm.add_widget(Factory.WifiConnectionScreen(name="wifi_connect"))
-
         
         #starting_page = "wifi_connect" if is_connected() else "wifi_select"
         starting_page = "wifi_select"

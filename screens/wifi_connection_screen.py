@@ -15,10 +15,33 @@ class WifiConnectionScreen(Screen):
         if is_connected():
             self.try_finding_server()
         else:
-            self.try_connecting_to_wifi()
+            # Ожидаем, что ssid и пароль заданы извне перед вызовом
+            # если их нет — показываем экран выбора
+            pass
     
     def try_connecting_to_wifi(self, ssid, password):
-        print("connecting")
-    
+        """Пытаемся подключиться к WiFi и показываем результат во всплывающем окне."""
+        success, msg = connect_wifi(ssid, password)
+        if success:
+            self.popup_text = f"Подключено к {ssid}"
+            self.show_popup = True
+            # После подключения пробуем найти сервер
+            server_ip = find_server_on_lan()
+            if server_ip:
+                self.popup_text = f"Найден сервер: {server_ip}"
+            else:
+                self.popup_text = "Подключено, но сервер не найден"
+            self.show_popup = True
+        else:
+            self.popup_text = f"Ошибка подключения: {msg}"
+            self.show_popup = True
+
     def try_finding_server(self):
-        print("finding")
+        """Ищем сервер в локальной сети и обновляем popup_text."""
+        server_ip = find_server_on_lan()
+        if server_ip:
+            self.popup_text = f"Найден сервер: {server_ip}"
+            self.show_popup = True
+        else:
+            self.popup_text = "Сервер не найден в локальной сети"
+            self.show_popup = True

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "play_pause",
+    "hue": 0.51,
+    "grid_x": 0,
+    "grid_y": 2,
+    "grid_w": 2,
+    "grid_h": 1
+  },
+  {
+    "id": "calc_pc",
+    "hue": 0.8,
+    "grid_x": 3,
+    "grid_y": 2,
+    "grid_w": 2,
+    "grid_h": 1
+  },
+  {
+    "id": "power_off",
+    "hue": 0.6,
+    "grid_x": 4,
+    "grid_y": 0,
+    "grid_w": 1,
+    "grid_h": 1
+  }
+]
