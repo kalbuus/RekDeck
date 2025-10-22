@@ -1,5 +1,6 @@
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import BooleanProperty, StringProperty
+from kivy.app import App
 
 from interaction_managers.network_manager import *
 
@@ -17,31 +18,22 @@ class WifiConnectionScreen(Screen):
         else:
             # Ожидаем, что ssid и пароль заданы извне перед вызовом
             # если их нет — показываем экран выбора
-            pass
-    
-    def try_connecting_to_wifi(self, ssid, password):
-        """Пытаемся подключиться к WiFi и показываем результат во всплывающем окне."""
-        success, msg = connect_wifi(ssid, password)
-        if success:
-            self.popup_text = f"Подключено к {ssid}"
-            self.show_popup = True
-            # После подключения пробуем найти сервер
-            server_ip = find_server_on_lan()
-            if server_ip:
-                self.popup_text = f"Найден сервер: {server_ip}"
-            else:
-                self.popup_text = "Подключено, но сервер не найден"
-            self.show_popup = True
-        else:
-            self.popup_text = f"Ошибка подключения: {msg}"
-            self.show_popup = True
+            App.get_running_app().sm.current = "wifi_select"
 
     def try_finding_server(self):
-        """Ищем сервер в локальной сети и обновляем popup_text."""
-        server_ip = find_server_on_lan()
-        if server_ip:
-            self.popup_text = f"Найден сервер: {server_ip}"
-            self.show_popup = True
-        else:
-            self.popup_text = "Сервер не найден в локальной сети"
-            self.show_popup = True
+        """Ищем сервер в локальной сети асинхронно и обновляем popup_text через callback."""
+        import threading, asyncio
+        def run_async():
+            try:
+                server_ip = asyncio.run(find_server_on_lan())
+            except Exception:
+                server_ip = None
+            def update():
+                if server_ip:
+                    self.popup_text = f"Найден сервер: {server_ip}"
+                else:
+                    self.popup_text = "Сервер не найден в локальной сети"
+                self.show_popup = True
+            from kivy.clock import Clock
+            Clock.schedule_once(lambda dt: update())
+        threading.Thread(target=run_async, daemon=True).start()

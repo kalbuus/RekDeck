@@ -1,10 +1,11 @@
 import asyncio
 import json
+import queue
 from websockets import serve
 from threading import Thread
 
 class WsServer:
-    def __init__(self, host='127.0.0.1', port=6789, app=None):
+    def __init__(self, host="0.0.0.0", port=8765, app=None):
         self.host = host
         self.port = port
         self.app = app
@@ -13,6 +14,7 @@ class WsServer:
         self._loop = None
         self._thread = None
         self._running = False
+        self.event_queue = queue.Queue()
 
     async def _handler(self, websocket, path):
         self._clients.add(websocket)
@@ -44,11 +46,22 @@ class WsServer:
                     await websocket.send(json.dumps({'error': 'unknown cmd'}))
         finally:
             self._clients.remove(websocket)
+    
+    async def broadcast(self):
+        while True:
+            if not self.event_queue.empty():
+                event = self.event_queue.get()
+                for ws in self._clients.copy():
+                    try:
+                        await ws.send(event)
+                    except:
+                        self._clients.remove(ws)
+            await asyncio.sleep(0.1)
 
     async def _start_async(self):
         async with serve(self._handler, self.host, self.port):
             self._running = True
-            await asyncio.Future()  # run forever
+            await self.broadcast()
 
     def start(self):
         if self._thread and self._thread.is_alive():

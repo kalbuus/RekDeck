@@ -86,7 +86,7 @@ class MainApp(App):
     def build(self):
         self.layout = MainLayout()
         # Запускаем WebSocket сервер
-        self.ws_server = WsServer(host='127.0.0.1', port=6789, app=self)
+        self.ws_server = WsServer(host='0.0.0.0', port=8765, app=self)
         try:
             self.ws_server.start()
         except Exception as e:
