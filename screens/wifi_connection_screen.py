@@ -30,7 +30,7 @@ class WifiConnectionScreen(Screen):
                 server_ip = None
             def update():
                 if server_ip:
-                    self.popup_text = f"Найден сервер: {server_ip}"
+                    App.get_running_app().on_connect()
                 else:
                     self.popup_text = "Сервер не найден в локальной сети"
                 self.show_popup = True

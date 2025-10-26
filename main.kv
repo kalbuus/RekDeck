@@ -1,6 +1,8 @@
 #:import SlideTransition kivy.uix.screenmanager.SlideTransition
 
 <BaseFloatLayout>:
+    MainLayout:
+        id: main_layout
     WifiLayout:
         id: wifi_layout
         orientation: 'vertical'
@@ -15,4 +17,21 @@
                 Rectangle:
                     pos: self.pos
                     size: self.size
+
+<MainLayout>:
+    orientation: 'vertical'
+    FloatLayout:
+        id: top_layout
+        size_hint_y: 3
+        canvas.before:
+            Color:
+                rgba: (0.149, 0.157, 0.231, 1)
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [20]
+        DeckArea:
+            id: deck_area_obj
+            size_hint: 0.75, 0.75
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
     

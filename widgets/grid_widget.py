@@ -40,7 +40,7 @@ class GridWidget(Widget):
         left = self.parent.center_x - grid_width / 2
         bottom = self.parent.center_y - grid_height / 2
         with self.canvas:
-            Color(0.365, 0.384, 0.565, 1)
+            Color(0.365, 0.384, 0.565, 0.2)
             for x in range(self.cols + 1):
                 px = left + x * cell_size
                 Line(points=[px, bottom, px, bottom + grid_height], width=1)

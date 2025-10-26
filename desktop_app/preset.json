@@ -18,8 +18,64 @@
   {
     "id": "power_off",
     "hue": 0.6,
+    "grid_x": 3,
+    "grid_y": 0,
+    "grid_w": 1,
+    "grid_h": 1
+  },
+  {
+    "id": "play_pause",
+    "hue": 0.5,
+    "grid_x": 1,
+    "grid_y": 0,
+    "grid_w": 2,
+    "grid_h": 1
+  },
+  {
+    "id": "custom",
+    "hue": 0.7,
     "grid_x": 4,
     "grid_y": 0,
+    "grid_w": 1,
+    "grid_h": 2
+  },
+  {
+    "id": "power_off",
+    "hue": 0.6,
+    "grid_x": 1,
+    "grid_y": 1,
+    "grid_w": 1,
+    "grid_h": 1
+  },
+  {
+    "id": "lockscreen",
+    "hue": 0.3,
+    "grid_x": 0,
+    "grid_y": 0,
+    "grid_w": 1,
+    "grid_h": 1
+  },
+  {
+    "id": "calc_pc",
+    "hue": 0.8,
+    "grid_x": 2,
+    "grid_y": 1,
+    "grid_w": 2,
+    "grid_h": 1
+  },
+  {
+    "id": "lockscreen",
+    "hue": 0.3,
+    "grid_x": 2,
+    "grid_y": 2,
+    "grid_w": 1,
+    "grid_h": 1
+  },
+  {
+    "id": "power_off",
+    "hue": 0.6,
+    "grid_x": 0,
+    "grid_y": 1,
     "grid_w": 1,
     "grid_h": 1
   }

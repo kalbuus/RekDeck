@@ -15,6 +15,7 @@ from screens.wifi_select_screen import WifiSelectScreen
 from screens.wifi_password_screen import WifiPasswordScreen
 from screens.wifi_connection_screen import WifiConnectionScreen
 from widgets.networks_recycle_view import NetworksRecycleView, SelectableNetworkLabel
+from widgets.deck_area import DeckArea
 from interaction_managers.network_manager import is_connected
 
 import asyncio
@@ -23,6 +24,9 @@ import os
 Window.size = (800,480)
 
 class BaseFloatLayout(FloatLayout):
+    pass
+
+class MainLayout(BoxLayout):
     pass
 
 class WifiLayout(BoxLayout):
@@ -56,9 +60,13 @@ class StreamDeckApp(App):
         self.sm.add_widget(Factory.WifiConnectionScreen(name="wifi_connect"))
         
         starting_page = "wifi_connect" if is_connected() else "wifi_select"
-        #starting_page = "wifi_select"
+        
         self.sm.current = starting_page
         return self.root
+    
+    def on_connect(self):
+        self.root.remove_widget(self.root.ids.wifi_layout)
+        
 
 
 def main():
