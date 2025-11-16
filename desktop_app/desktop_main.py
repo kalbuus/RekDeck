@@ -28,8 +28,9 @@ from deck_button import DeckButton
 from deck_area import DeckArea
 from animated_plus_button import AnimatedPlusButton
 from button_category_menu import ButtonCategoryMenu
+from button_settings_menu import ButtonSettingsMenu
 
-from button_types_util import buttonTypesUtilInstance
+from widgets_manager import WidgetsManager
 from ws_server import WsServer
 
 class MainLayout(BoxLayout):
@@ -46,16 +47,27 @@ class MainLayout(BoxLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.overlay_menu = None
+        self.button_settings_menu = None
 
     def show_category_menu(self):
         if self.overlay_menu is None:
-            categories = buttonTypesUtilInstance.get_categories()
+            categories = self.app.widgets_manager.get_categories()
             self.overlay_menu = ButtonCategoryMenu(categories=categories)
-            self.overlay_menu.bind(on_dismiss=self._on_menu_dismiss)
+            self.overlay_menu.bind(on_dismiss=self._on_category_menu_dismiss)
         self.overlay_menu.open()
 
-    def _on_menu_dismiss(self, *args):
+    def _on_category_menu_dismiss(self, *args):
         self.overlay_menu = None
+    
+    def show_settings_menu(self, button_id):
+        if self.button_settings_menu is None:
+            self.button_settings_menu = ButtonSettingsMenu(button_id)
+            self.button_settings_menu.bind(on_dismiss=self._on_settings_menu_dismiss)
+        self.button_settings_menu.open()
+    
+    def _on_settings_menu_dismiss(self, *args):
+        self.button_settings_menu = None
+        
 
 class AppIcon(pystray.Icon):
     def __init__(self, app, name, icon=None, title=None, menu=None, **kwargs):
@@ -66,7 +78,6 @@ class AppIcon(pystray.Icon):
         super()._on_notify(wparam, lparam)
         if (hex(lparam) == "0x202"):
             self.kvApp.show_window("", "")
-            print("Mouse Button Pressed")
 
 class MainApp(App):
     last_selected_button = ObjectProperty(None)
@@ -93,6 +104,8 @@ class MainApp(App):
             print('Failed to start ws server:', e)
         self.tray_icon = None
         Window.bind(on_request_close=self.on_request_close)
+        # Загружаем все виджеты (кнопки)
+        self.widgets_manager = WidgetsManager()
         # Найти плюс-кнопку и добавить обработчик
         def on_plus(instance):
             self.layout.show_category_menu()
@@ -129,7 +142,7 @@ class MainApp(App):
     def create_tray_icon(self):
         """Создаём иконку в системном трее"""
         # Создаём иконку
-        with Image.open(r"assets/python.ico") as icon_image:
+        with Image.open(r"assets/project_icons/python.ico") as icon_image:
             self.tray_icon = AppIcon(self, "name", icon_image, "Title", [
                 pystray.MenuItem("Показать окно", self.show_window),
                 pystray.MenuItem("Выход", self.quit_app)])

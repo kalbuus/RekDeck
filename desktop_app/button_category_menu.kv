@@ -30,10 +30,8 @@
     size_hint: 1, 1
     background_color: 0, 0, 0, 0
     auto_dismiss: True
-    Scatter:
-        id: scatter_X_button
-        do_rotation: False
-        do_scale: False
+    FloatLayout:
+        id: float_X_button
         AnimatedPlusButton:
             text: 'x'
             size_hint: None, None
@@ -51,4 +49,5 @@
                     pos: self.pos
                     size: self.size
                     radius: [self.height * 0.3,]
+
     

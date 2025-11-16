@@ -29,6 +29,8 @@ class DeckButton(Widget, HoverBehavior):
 
     button_id = StringProperty(None)
 
+    can_move = BooleanProperty(True)
+
     def get_hsv_color(self, selected=None):
         import colorsys
         h = getattr(self, 'hue', 0.1)
@@ -90,6 +92,7 @@ class DeckButton(Widget, HoverBehavior):
             for prop in ('width', 'height', 'cols', 'rows', 'pos', 'center_x', 'center_y'):
                 uid = grid_widget.fbind(prop, self.update_pos_size)
                 self._grid_widget_binds.append((prop, uid))
+                pass
 
     def update_pos_size(self, *args):
         if not self.grid_widget or self.grid_widget.cols == 0:
@@ -110,6 +113,8 @@ class DeckButton(Widget, HoverBehavior):
             pass
 
     def on_touch_down(self, touch):
+        if not self.can_move:
+            return super().on_touch_down(touch)
         if self.collide_point(*touch.pos):
             self.dragging = True
             self.start_touch = touch.pos
@@ -121,7 +126,7 @@ class DeckButton(Widget, HoverBehavior):
         return super().on_touch_down(touch)
 
     def on_touch_move(self, touch):
-        if touch.grab_current is self and self.dragging:
+        if touch.grab_current is self and self.dragging and self.can_move:
             dx = touch.pos[0] - self.start_touch[0]
             dy = touch.pos[1] - self.start_touch[1]
             self.x += dx
@@ -131,6 +136,8 @@ class DeckButton(Widget, HoverBehavior):
         return super().on_touch_move(touch)
 
     def on_touch_up(self, touch):
+        if not self.can_move:
+            return super().on_touch_up(touch)
         if touch.grab_current is self:
             touch.ungrab(self)
             if self.dragging:

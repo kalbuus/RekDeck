@@ -9,15 +9,15 @@
             size: self.size
             offset: -0, -6
             spread_radius: -6, -9
-            border_radius: [35, 35, 35, 35]
-            blur_radius: 20
+            border_radius: [min(self.size[0]/self.grid_w, self.size[1]/self.grid_h) * 0.35, min(self.size[0]/self.grid_w, self.size[1]/self.grid_h) * 0.35, min(self.size[0]/self.grid_w, self.size[1]/self.grid_h) * 0.35, min(self.size[0]/self.grid_w, self.size[1]/self.grid_h) * 0.35]
+            blur_radius: min(self.size[0]/self.grid_w, self.size[1]/self.grid_h) * 0.2
         # Основной цвет кнопки
         Color:
             rgba: self.anim_color if hasattr(self, 'anim_color') else (0.1, 0.6, 0.9, 1)
         RoundedRectangle:
             pos: self.pos[0] + 5, self.pos[1] + 5
             size: self.size[0] - 10, self.size[1] - 10
-            radius: [35]
+            radius: [min(self.size[0]/self.grid_w, self.size[1]/self.grid_h) * 0.35]
     canvas.after:
         # Иконка, если задана
         Color:

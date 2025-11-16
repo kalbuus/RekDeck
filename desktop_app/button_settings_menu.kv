@@ -1,0 +1,51 @@
+<ButtonSettingsMenu>:
+    size_hint: 1,1 
+    auto_dismiss: True
+    background_color: 0, 0, 0, 0.5
+    overlay_color: 0, 0, 0, 0.5
+
+    BoxLayout:
+        id: panel_box_layout
+        orientation: 'horizontal'
+        size_hint: 0.8, 0.9
+        spacing: dp(16)
+        BoxLayout:
+            id: settings_box_layout
+            orientation: 'vertical'
+            size_hint: 1, 1
+            padding: dp(24), dp(24), dp(24), dp(24)
+            spacing: dp(16)
+            canvas.before:
+                Color:
+                    rgba: 0.13, 0.13, 0.13, 1
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [16]
+            Label:
+                text: 'Настройки кнопки'
+                font_size: '20sp'
+                size_hint_y: None
+                height: self.texture_size[1] + dp(12)
+                color: 1, 1, 1, 1
+            BoxLayout:
+                id: content_box
+                orientation: 'vertical'
+                size_hint_y: 1
+                spacing: dp(8)
+                # Здесь будут динамически добавляться настройки
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint_y: None
+                height: dp(40)
+                spacing: dp(12)
+                Button:
+                    text: 'Закрыть'
+                    on_release: root.dismiss()
+                Button:
+                    text: 'Применить'
+                    on_release: root.on_apply() if hasattr(root, 'on_apply') else None
+        FloatLayout:
+            id: float_grid_layout
+            size_hint: (1, 1)
+    

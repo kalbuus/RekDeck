@@ -10,35 +10,26 @@ class GridWidget(Widget):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._last_width = None
-        self._last_cols = None
-        self._last_rows = None
         self.bind(pos=self.update_grid,
-                  width=self._on_width_or_grid,
-                  cols=self._on_width_or_grid,
-                  rows=self._on_width_or_grid)
-
-    def _on_width_or_grid(self, *args):
-        # Высота пересчитывается только если реально изменилась ширина, cols или rows
-        if self.cols == 0:
-            return
-        cell_size = self.width / self.cols
-        new_height = cell_size * self.rows
-        if self.height != new_height:
-            self.height = new_height
-        self.update_grid()
+                  size=self.update_grid,
+                  cols=self.update_grid,
+                  rows=self.update_grid)
 
     def update_grid(self, *args):
+        """Просто перерисовывает сетку без изменения размеров виджета"""
         self.canvas.clear()
-        if self.cols == 0:
+        if self.cols <= 0 or self.rows <= 0:
             return
-        
+
+        # Расчёт размера клетки, чтобы сетка влезла по ширине
         cell_size = self.width / self.cols
         grid_width = cell_size * self.cols
         grid_height = cell_size * self.rows
-        # Центрируем сетку относительно центра виджета
-        left = self.parent.center_x - grid_width / 2
-        bottom = self.parent.center_y - grid_height / 2
+
+        # Центрируем сетку внутри виджета
+        left = self.x + (self.width - grid_width) / 2
+        bottom = self.y + (self.height - grid_height) / 2
+
         with self.canvas:
             Color(0.365, 0.384, 0.565, 1)
             for x in range(self.cols + 1):
@@ -49,18 +40,16 @@ class GridWidget(Widget):
                 Line(points=[left, py, left + grid_width, py], width=1)
 
     def grid_to_pixel(self, gx, gy):
-        if self.cols == 0:
-            return (self.parent.center_x, self.parent.center_y)
+        """Перевод координат клетки в пиксели относительно текущей сетки"""
+        if self.cols <= 0 or self.rows <= 0:
+            return self.center
+
         cell_size = self.width / self.cols
         grid_width = cell_size * self.cols
         grid_height = cell_size * self.rows
-        left = self.parent.center_x - grid_width / 2
-        bottom = self.parent.center_y - grid_height / 2
+        left = self.x + (self.width - grid_width) / 2
+        bottom = self.y + (self.height - grid_height) / 2
         return (left + gx * cell_size, bottom + gy * cell_size)
 
     def inside_bounds(self, gx, gy, gw, gh):
-        if gx < 0 or gy < 0:
-            return False
-        if gx + gw > self.cols or gy + gh > self.rows:
-            return False
-        return True
+        return 0 <= gx and 0 <= gy and gx + gw <= self.cols and gy + gh <= self.rows
