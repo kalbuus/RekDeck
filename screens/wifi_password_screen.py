@@ -2,6 +2,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from widgets.virtual_keyboard import VirtualKeyboard
 from kivy.uix.button import Button
 from kivy.app import App
+from interaction_managers import network_manager
 
 class WifiPasswordScreen(Screen):
     def __init__(self, **kwargs):
@@ -20,9 +21,12 @@ class WifiPasswordScreen(Screen):
     
     def on_done(self, instance):
         app = App.get_running_app()
+        app.wifi_current_password = self.ids.password_text_input.text
+        network_manager.connect_wifi(app.wifi_current_ssid, app.wifi_current_password)
+        
         sm = app.root.ids.wifi_screen_manager
         sm.current = "wifi_connect"
-        app.wifi_current_password = self.ids.password_text_input.text
+
 
 class DoneButton(Button):
     pass

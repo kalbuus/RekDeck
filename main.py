@@ -15,6 +15,7 @@ from screens.wifi_select_screen import WifiSelectScreen
 from screens.wifi_password_screen import WifiPasswordScreen
 from screens.wifi_connection_screen import WifiConnectionScreen
 from widgets.networks_recycle_view import NetworksRecycleView, SelectableNetworkLabel
+from widgets.virtual_keyboard import VirtualKeyboard, KeyboardButton
 from widgets.deck_area import DeckArea
 from interaction_managers.network_manager import is_connected
 
@@ -55,11 +56,19 @@ class StreamDeckApp(App):
         self.root = BaseFloatLayout()
 
         self.sm = self.root.ids.wifi_screen_manager
-        self.sm.add_widget(Factory.WifiSelectScreen(name="wifi_select"))
-        self.sm.add_widget(Factory.WifiPasswordScreen(name="wifi_password"))
-        self.sm.add_widget(Factory.WifiConnectionScreen(name="wifi_connect"))
+
+        connected = is_connected()
         
-        starting_page = "wifi_connect" if is_connected() else "wifi_select"
+        if not connected:
+            self.sm.add_widget(Factory.WifiSelectScreen(name="wifi_select"))
+            self.sm.add_widget(Factory.WifiPasswordScreen(name="wifi_password"))
+            self.sm.add_widget(Factory.WifiConnectionScreen(name="wifi_connect"))
+        else:
+            self.sm.add_widget(Factory.WifiConnectionScreen(name="wifi_connect"))
+            self.sm.add_widget(Factory.WifiPasswordScreen(name="wifi_password"))
+            self.sm.add_widget(Factory.WifiSelectScreen(name="wifi_select"))
+        
+        starting_page = "wifi_connect" if connected else "wifi_select"
         
         self.sm.current = starting_page
         return self.root
