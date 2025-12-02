@@ -4,6 +4,8 @@ import queue
 from websockets import serve
 from threading import Thread
 
+from deck_area import CONFIG_PATH
+
 class WsServer:
     def __init__(self, host="0.0.0.0", port=8765, app=None):
         self.host = host
@@ -19,31 +21,20 @@ class WsServer:
     async def _handler(self, websocket, path):
         self._clients.add(websocket)
         try:
+            try:
+                with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
+                    area_state_cmd = {'cmd': 'area_state', 'data': json.load(f)}
+            except:
+                area_state_cmd = {'cmd': 'area_state', 'data': {}}
+            await websocket.send(json.dumps(area_state_cmd))
             async for message in websocket:
                 try:
                     data = json.loads(message)
                 except Exception:
                     await websocket.send(json.dumps({'error': 'invalid json'}))
                     continue
-                # Простая команда get_selected
                 cmd = data.get('cmd')
-                if cmd == 'get_selected':
-                    info = None
-                    if self.app:
-                        btn = self.app.get_last_selected_button()
-                        if btn:
-                            info = {
-                                'id': getattr(btn, 'button_id', None),
-                                'hue': btn.hue,
-                                'grid_x': btn.grid_x,
-                                'grid_y': btn.grid_y,
-                                'grid_w': btn.grid_w,
-                                'grid_h': btn.grid_h,
-                                'emoji': getattr(btn, 'emoji', None)
-                            }
-                    await websocket.send(json.dumps({'cmd': 'get_selected', 'data': info}))
-                else:
-                    await websocket.send(json.dumps({'error': 'unknown cmd'}))
+                
         finally:
             self._clients.remove(websocket)
     

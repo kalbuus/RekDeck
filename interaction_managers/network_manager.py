@@ -1,3 +1,35 @@
+import json
+
+class WebSocketClient:
+    def __init__(self, uri):
+        self.uri = uri
+        self.connection = None
+
+    async def connect(self):
+        from websockets import connect
+        self.connection = await connect(self.uri)
+        return self.connection
+
+    async def send(self, message):
+        if self.connection is None:
+            await self.connect()
+        if isinstance(message, (dict, list)):
+            message = json.dumps(message)
+        await self.connection.send(message)
+
+    async def receive(self):
+        if self.connection is None:
+            await self.connect()
+        response = await self.connection.recv()
+        try:
+            return json.loads(response)
+        except Exception:
+            return response
+
+    async def close(self):
+        if self.connection:
+            await self.connection.close()
+            self.connection = None
 import subprocess
 import socket
 import ipaddress
@@ -58,23 +90,20 @@ def connect_wifi(ssid, password=None):
 
 
 def _get_local_ip():
-    """Попытаться определить локальный IP машины (без внешнего запроса)."""
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        # не посылаем данные, просто подключаемся к публичному адресному UDP чтобы узнать интерфейс
         s.connect(("8.8.8.8", 80))
         ip = s.getsockname()[0]
         s.close()
         return ip
     except Exception:
-        # fallback
         try:
             return socket.gethostbyname(socket.gethostname())
         except Exception:
             return None
 
 async def _check_host(ip, port):
-    """Пробуем подключиться к серверу на ip:PORT."""
+    """Попытка подключиться к серверу на ip:PORT."""
     try:
         uri = f"ws://{ip}:{port}"
         async with connect(uri):
@@ -84,12 +113,11 @@ async def _check_host(ip, port):
 
 async def find_server_on_lan(port=8765):
     is_debug = os.name == 'nt'
-    if is_debug: # В режиме отладки возвращаем localhost
+    if is_debug:
         return '127.0.0.1'
 
     local_ip = _get_local_ip()
-    subnet = ".".join(local_ip.split(".")[:-1])  # например 192.168.0
-    print(f"Сканирую подсеть: {subnet}.0/24")
+    subnet = ".".join(local_ip.split(".")[:-1])
 
     tasks = []
     for i in range(1, 255):

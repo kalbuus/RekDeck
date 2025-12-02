@@ -12,22 +12,14 @@ class DeckButton(Widget, HoverBehavior):
         # Автоматически обновлять цвет при изменении hue
         self.anim_color = self.get_hsv_color()
         area = App.get_running_app().get_deck_area()
-        if area: area.save_buttons_to_json()
     image_source = ObjectProperty(None)
-    emoji = ObjectProperty('')
     hue = NumericProperty(0.1)
     selected = BooleanProperty(False)
     anim_color = ObjectProperty([0.1, 0.6, 0.9, 1])
     icon_fit_button = BooleanProperty(False)
 
-    text = StringProperty("x")
-    font_name = StringProperty("seguiemj")
-    font_size = NumericProperty(32)
-
-    texture = ObjectProperty(None)
-    texture_size = ListProperty([0, 0])
-
     button_id = StringProperty(None)
+    index = NumericProperty(0)
 
     can_move = BooleanProperty(True)
 
@@ -67,14 +59,10 @@ class DeckButton(Widget, HoverBehavior):
         self.prev_grid_x = self.grid_x
         self.prev_grid_y = self.grid_y
 
-        # Text rendering
-        self.texture_update()  # чтобы текст появился сразу
-        # при изменении текста или размера пересоздаём текстуру
-        self.bind(text=lambda *_: self.texture_update())
-        self.bind(font_size=lambda *_: self.texture_update())
-
         # Автоматически обновлять размер и позицию при изменении grid_widget
         if self.grid_widget:
+            if self.grid_widget.deck_area:
+                self.index = self.grid_widget.deck_area.get_next_index()
             self._bind_to_grid_widget(self.grid_widget)
 
     def on_grid_widget(self, instance, value):
@@ -97,7 +85,10 @@ class DeckButton(Widget, HoverBehavior):
     def update_pos_size(self, *args):
         if not self.grid_widget or self.grid_widget.cols == 0:
             return
-        cell_size = self.grid_widget.width / self.grid_widget.cols
+
+        cell_size_x = self.grid_widget.width / self.grid_widget.cols
+        cell_size_y = self.grid_widget.height / self.grid_widget.rows
+        cell_size = min(cell_size_x, cell_size_y)
         self.size = (self.grid_w * cell_size, self.grid_h * cell_size)
         px, py = self.grid_widget.grid_to_pixel(self.grid_x, self.grid_y)
         self.pos = (px, py)
@@ -168,7 +159,7 @@ class DeckButton(Widget, HoverBehavior):
                     def _on_complete(anim, widget):
                         self.grid_x, self.grid_y = gx, gy
                         area = App.get_running_app().get_deck_area()
-                        if area: area.save_buttons_to_json()
+                        if area: area.save_preset_to_json()
                         self.update_pos_size()
 
                     anim = Animation(x=tx, y=ty, d=0.12, t='out_quad')
@@ -176,13 +167,4 @@ class DeckButton(Widget, HoverBehavior):
                     anim.start(self)
                 return True
         return super().on_touch_up(touch)
-    
-    def texture_update(self):
-        label = CoreLabel(
-            text=self.text,
-            font_name=self.font_name,
-            font_size=self.font_size
-        )
-        label.refresh()
-        self.texture = label.texture
-        self.texture_size = list(label.texture.size)
+

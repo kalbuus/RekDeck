@@ -49,6 +49,7 @@ class MainLayout(BoxLayout):
         self.overlay_menu = None
         self.button_settings_menu = None
 
+
     def show_category_menu(self):
         if self.overlay_menu is None:
             categories = self.app.widgets_manager.get_categories()
@@ -89,7 +90,7 @@ class MainApp(App):
     
     def update_settings(self):
         if self.last_selected_button == None: return
-        self.layout.ids.hue_slider.value = self.last_selected_button.hue
+        #self.layout.ids.hue_slider.value = self.last_selected_button.hue
 
     def get_last_selected_button(self):
         return self.last_selected_button
@@ -125,13 +126,16 @@ class MainApp(App):
             for child in layout.overlay_menu.walk():
                 if isinstance(child, AnimatedPlusButton):
                     child.bind(on_release=lambda inst: on_x(inst))
+
+        self.get_deck_area().load_preset_from_json()
+        
         Thread(target=self.create_tray_icon, daemon=True).start()
         return self.layout
     
     def on_request_close(self, *args):
         """Перехватываем закрытие окна"""
         Window.hide()
-        return True  # не даём приложению закрыться
+        return True
 
     def get_deck_area(self):
         if self.layout != None:
@@ -141,13 +145,11 @@ class MainApp(App):
     
     def create_tray_icon(self):
         """Создаём иконку в системном трее"""
-        # Создаём иконку
         with Image.open(r"assets/project_icons/python.ico") as icon_image:
             self.tray_icon = AppIcon(self, "name", icon_image, "Title", [
                 pystray.MenuItem("Показать окно", self.show_window),
                 pystray.MenuItem("Выход", self.quit_app)])
 
-        # Запускаем иконку
         self.tray_icon.run_detached()
 
     def show_window(self, icon, item):
@@ -156,7 +158,6 @@ class MainApp(App):
         Clock.schedule_once(lambda dt: Window.raise_window())
 
     def quit_app(self, icon, item):
-        # Завершить приложение полностью
         try:
             if hasattr(self, 'ws_server') and self.ws_server:
                 self.ws_server.stop()

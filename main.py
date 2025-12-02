@@ -1,5 +1,5 @@
-from kivy.config import Config
-Config.set('modules', 'cursor', '0')
+#from kivy.config import Config
+#Config.set('modules', 'cursor', '0')
 
 from kivy.core.window import Window
 Window.show_cursor = False
@@ -16,6 +16,7 @@ from screens.wifi_password_screen import WifiPasswordScreen
 from screens.wifi_connection_screen import WifiConnectionScreen
 from widgets.networks_recycle_view import NetworksRecycleView, SelectableNetworkLabel
 from widgets.virtual_keyboard import VirtualKeyboard, KeyboardButton
+from interaction_managers.network_manager import WebSocketClient
 from widgets.deck_area import DeckArea
 from interaction_managers.network_manager import is_connected
 
@@ -25,14 +26,17 @@ import os
 Window.size = (800,480)
 
 class BaseFloatLayout(FloatLayout):
-    pass
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.main_layout = self.ids.main_layout
 
 class MainLayout(BoxLayout):
-    pass
+    def __init__(self, **kwargs):
+        self.server = None
+        super().__init__(**kwargs)
 
 class WifiLayout(BoxLayout):
     pass
-
 
 kv_file_count = 0
 for root, _, files in os.walk(os.getcwd()):

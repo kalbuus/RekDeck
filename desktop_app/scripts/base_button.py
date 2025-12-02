@@ -16,9 +16,7 @@ class BaseButton:
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
-            # проверяем, есть ли такой атрибут в классе
             if hasattr(self, key):
-                # применяем атрибут
                 setattr(self, key, value)
             else:
                 raise AttributeError(f"Unknown parameter '{key}' for {self.__class__.__name__}")

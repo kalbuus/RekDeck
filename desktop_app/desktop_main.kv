@@ -3,7 +3,7 @@
     deck_area: deck_area_obj
     FloatLayout:
         id: top_layout
-        size_hint_y: 3
+        size_hint_y: 5
         canvas.before:
             Color:
                 rgba: (0.149, 0.157, 0.231, 1)
@@ -41,17 +41,3 @@
                 pos: self.pos
                 size: self.size
                 radius: [20, 20, 0, 0]
-        Label:
-            text: 'Hue:'
-            size_hint_x: None
-            width: 60
-            color: 1,1,1,1
-        Slider:
-            id: hue_slider
-            min: 0
-            max: 1
-            value: root.app.get_last_selected_button().hue if root.app.get_last_selected_button() else 0
-            step: 0.01
-            size_hint_x: 0.5
-            on_value:
-                setattr(root.app.get_last_selected_button(), 'hue', self.value) if root.app.get_last_selected_button() else None

@@ -9,10 +9,10 @@ class WidgetsManager:
             with open(file_path, 'r', encoding='utf-8') as f:
                 self.categories = json.load(f)
         except FileNotFoundError:
-            print(f"Error: File not found at {file_path}")
+            print(f"Error: Категории кнопок не загружены: {file_path}")
             return
         except json.JSONDecodeError:
-            print(f"Error: Invalid JSON format in {file_path}")
+            print(f"Error: Неправильный json формат файла категорий: {file_path}")
             return
 
     def load_button_classes(self):
@@ -38,6 +38,9 @@ class WidgetsManager:
             })
 
         return parsed_categories
+    
+    def get_button_by_id(self, button_id):
+        return self.all_buttons[button_id]
 
     def __init__(self):
         self.all_buttons = self.load_button_classes()

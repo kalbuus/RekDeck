@@ -23,12 +23,16 @@ class ButtonSettingsMenu(ModalView):
         super().__init__(**kwargs)
         self.bind(settings=self._update_settings)
         self.button_id = button_id
-        self.create_button_visualisation(1, 1, 0)
+        self.create_button_visualisation(1, 1, 0, "")
 
     def on_open(self):
         self.content_box = self.ids.content_box
         self._update_settings()
         return super().on_open()
+    
+    def preset_settings(self, button_id, w, h, color, icon):
+        self.create_button_visualisation(w, h, color, icon)
+        self.button_id = button_id
 
     def create_labeled_slider(self, label1, slider, label2, settings_id):
         bl_index = self.add_one_line_settings([
@@ -85,7 +89,7 @@ class ButtonSettingsMenu(ModalView):
 
         pass
 
-    def create_button_visualisation(self, w, h, color):
+    def create_button_visualisation(self, w, h, color, icon):
         if self.grid:
             self.ids.float_grid_layout.remove_widget(self.grid)
         if self.btn:
@@ -93,7 +97,10 @@ class ButtonSettingsMenu(ModalView):
 
         self.grid = GridWidget(cols=w, rows=h, size_hint=(1, 1), pos_hint={"center_x": 0.5, "center_y": 0.5})
         self.ids.float_grid_layout.add_widget(self.grid)
-        self.btn = DeckButton(grid_widget=self.grid, can_move=False, grid_w=w, grid_h=h, hue=color)
+        self.btn = DeckButton(
+            grid_widget=self.grid, 
+            image_source=icon, 
+            can_move=False, grid_w=w, grid_h=h, hue=color)
         self.ids.float_grid_layout.add_widget(self.btn)
 
     def clear_settings(self):

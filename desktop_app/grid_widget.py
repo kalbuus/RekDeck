@@ -1,12 +1,14 @@
 
 from kivy.uix.widget import Widget
-from kivy.properties import NumericProperty
+from kivy.properties import NumericProperty, ObjectProperty
 from kivy.graphics import Color, Line
 
 class GridWidget(Widget):
     cols = NumericProperty(8)
     rows = NumericProperty(5)
     cell_size = NumericProperty(100)
+
+    deck_area = ObjectProperty()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -21,8 +23,10 @@ class GridWidget(Widget):
         if self.cols <= 0 or self.rows <= 0:
             return
 
-        # Расчёт размера клетки, чтобы сетка влезла по ширине
-        cell_size = self.width / self.cols
+        # Расчёт размера клетки, чтобы сетка влезла полностью по обеим осям
+        cell_size_x = self.width / self.cols
+        cell_size_y = self.height / self.rows
+        cell_size = min(cell_size_x, cell_size_y)
         grid_width = cell_size * self.cols
         grid_height = cell_size * self.rows
 
@@ -44,7 +48,9 @@ class GridWidget(Widget):
         if self.cols <= 0 or self.rows <= 0:
             return self.center
 
-        cell_size = self.width / self.cols
+        cell_size_x = self.width / self.cols
+        cell_size_y = self.height / self.rows
+        cell_size = min(cell_size_x, cell_size_y)
         grid_width = cell_size * self.cols
         grid_height = cell_size * self.rows
         left = self.x + (self.width - grid_width) / 2

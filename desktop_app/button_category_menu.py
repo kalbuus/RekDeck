@@ -10,7 +10,7 @@ from kivy.app import App
 from deck_area import DeckArea
 
 class ButtonTypeItem(Button):
-    '''Виджет кнопки внутри категории'''
+    '''Кнопка внутри категории'''
     type_name = StringProperty('')
     
     button_id = StringProperty('')
@@ -22,6 +22,7 @@ class ButtonTypeItem(Button):
         layout.overlay_menu.dismiss()
         layout.show_settings_menu(self.button_id)
         settings_menu = layout.button_settings_menu
+        settings_menu.preset_settings(self.button_id, 1, 1, 0, "")
 
         x_size_index = settings_menu.create_labeled_slider(
             Label(text="Размер по X", size_hint_x=None),
@@ -45,7 +46,6 @@ class ButtonTypeItem(Button):
         )
         color_slider = settings_menu.one_line_settings[settings_menu.settings[color_index]][1]
 
-        # Иконка
         import tkinter as tk
         from tkinter import filedialog
         import os
@@ -61,7 +61,6 @@ class ButtonTypeItem(Button):
                 self.selected_path = None
 
             def open_file_dialog(self, *args):
-                # Открываем стандартный диалог выбора файла через tkinter
                 root = tk.Tk()
                 root.withdraw()
                 file_path = filedialog.askopenfilename(
@@ -71,17 +70,22 @@ class ButtonTypeItem(Button):
                 )
                 root.destroy()
                 if file_path:
-                    self.selected_path = file_path
-                    self.button.text = "Выбрано"
+                    self.selected_path = os.path.basename(file_path)
+                    self.button.text = self.selected_path
                 else:
                     self.button.text = "Выбрать файл"
+                
+                layout = App.get_running_app().layout
+                layout.button_settings_menu.create_button_visualisation(
+                    x_size_slider.value, y_size_slider.value, color_slider.value, self.selected_path)
 
         icon_widget = IconSelectWidget()
         settings_menu.add_one_line_settings([icon_widget], 0, "icon")
 
         def on_value_changed(instance, value):
             layout = App.get_running_app().layout
-            layout.button_settings_menu.create_button_visualisation(x_size_slider.value, y_size_slider.value, color_slider.value)
+            layout.button_settings_menu.create_button_visualisation(
+                x_size_slider.value, y_size_slider.value, color_slider.value, icon_widget.selected_path)
         x_size_slider.bind(value=on_value_changed)
         y_size_slider.bind(value=on_value_changed)
         color_slider.bind(value=on_value_changed)
@@ -89,7 +93,7 @@ class ButtonTypeItem(Button):
 
 
 class ButtonCategoryItem(BoxLayout):
-    '''Категория кнопок, раскрывающаяся по нажатию'''
+    '''Кнопки категорий'''
     category_name = StringProperty('')
     category_id = StringProperty('')
     expanded = BooleanProperty(False)

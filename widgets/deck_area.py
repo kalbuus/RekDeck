@@ -1,35 +1,48 @@
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.gridlayout import GridLayout
-from kivy.uix.button import Button
-from kivy.properties import ListProperty
-
 from widgets.deck_button import DeckButton
 from widgets.grid_widget import GridWidget
 
 import colorsys
 
+CONFIG_PATH = r"preset.json"
+
 class DeckArea(FloatLayout):
+    def load_preset_from_json(self, data):
+        # Удаляем старые кнопки
+        for btn in list(self.active_buttons):
+            self.remove_widget(btn)
+        self.active_buttons.clear()
+        # Добавляем новые
+        for btn_data in data:
+            btn_info = None
+            kwargs = {
+                'button_id': btn_data.get('id'),
+                'hue': btn_data.get('hue', 0.1),
+                'grid_x': btn_data.get('grid_x', 0),
+                'grid_y': btn_data.get('grid_y', 0),
+                'grid_w': btn_data.get('grid_w', 1),
+                'grid_h': btn_data.get('grid_h', 1),
+                'image_source': btn_data.get('icon', ''),
+            }
+            btn = DeckButton(grid_widget=self.grid, **kwargs)
+            self.add_widget(btn)
+            self.active_buttons.append(btn)
+    
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.size_hint = (0.7, 1)
+        self.last_index = 0
 
-        # Внутренняя сетка для отображения ячеек
-        self.grid = GridWidget(cols=5, rows=3)
+        self.grid = GridWidget(cols=5, rows=3, pos_hint={"center_x": 0.5, "center_y": 0.5})
         self.add_widget(self.grid)
 
-        # Список активных (визуальных) кнопок
+        # Активные кнопки на сетке
         self.active_buttons = []
-
-        # Примеры кнопок (визуализация)
-        self.add_deck_button(emoji="😀", hue=0.1, grid_x=0, grid_y=0, grid_w=1, grid_h=1)
-        self.add_deck_button(emoji="✨", hue=0.4, grid_x=1, grid_y=0, grid_w=2, grid_h=1)
-        self.add_deck_button(emoji="⭐", hue=0.6, grid_x=3, grid_y=1, grid_w=2, grid_h=2)
-
-    def _hsv_to_rgba(self, h, s=0.4, v=0.8):
-        r,g,b = colorsys.hsv_to_rgb(h, s, v)
-        return (r, g, b, 1)
 
     def add_deck_button(self, **kwargs):
         btn = DeckButton(grid_widget=self.grid, **kwargs)
         self.add_widget(btn)
         self.active_buttons.append(btn)
+        self.save_preset_to_json()
         return btn
+
