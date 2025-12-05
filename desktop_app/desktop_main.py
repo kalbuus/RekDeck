@@ -159,8 +159,7 @@ class MainApp(App):
 
     def quit_app(self, icon, item):
         try:
-            if hasattr(self, 'ws_server') and self.ws_server:
-                self.ws_server.stop()
+            self.ws_server.stop()
         except Exception:
             pass
         icon.stop()

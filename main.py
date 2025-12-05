@@ -56,6 +56,14 @@ class StreamDeckApp(App):
     sm = ObjectProperty()
 
     def build(self):
+        import os, glob
+        assets_dir = os.path.join(os.getcwd(), "assets")
+        for tmp_img in glob.glob(os.path.join(assets_dir, "temp_*.png")):
+            try:
+                os.remove(tmp_img)
+            except Exception:
+                pass
+
         if not self.is_debug_mode: Window.fullscreen = True
         self.root = BaseFloatLayout()
 
@@ -79,7 +87,10 @@ class StreamDeckApp(App):
     
     def on_connect(self):
         self.root.remove_widget(self.root.ids.wifi_layout)
-        
+
+    def on_disconnect(self):
+        self.root.add_widget(self.root.ids.wifi_layout)
+        self.sm.current = "wifi_connect"
 
 
 def main():

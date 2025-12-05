@@ -13,6 +13,7 @@ class DeckArea(FloatLayout):
         for btn in self.active_buttons:
             if btn.index == 0: # не изменённое значение
                 continue
+            print(btn.image_source)
             btn_data = {
                 'id': getattr(btn, 'button_id', None),
                 'index': btn.index,
@@ -28,7 +29,7 @@ class DeckArea(FloatLayout):
         server = App.get_running_app().ws_server
 
         if server:
-            server.send_to_all({'cmd': "area_state", 'data': data})
+            server.send_to_all({'cmd': "area_state", 'data': server.encode_data(data)})
         
         with open(CONFIG_PATH, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)

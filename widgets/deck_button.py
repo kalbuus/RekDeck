@@ -81,6 +81,7 @@ class DeckButton(Widget):
             try:
                 Animation.cancel_all(self, 'anim_color')
                 Animation(anim_color=self.get_hsv_color(True), d=0.08, t='out_quad').start(self)
+                
             except Exception:
                 pass
             return True

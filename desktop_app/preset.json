@@ -2,41 +2,31 @@
   {
     "id": "calculator_button",
     "index": 1,
-    "hue": 0.21212121212121213,
-    "icon": "world.png",
+    "hue": 0.0,
+    "icon": "calculator.png",
     "grid_x": 3,
-    "grid_y": 1,
-    "grid_w": 1,
-    "grid_h": 2
+    "grid_y": 0,
+    "grid_w": 2,
+    "grid_h": 1
   },
   {
     "id": "calculator_button",
     "index": 2,
-    "hue": 0.0,
-    "icon": "calculator.png",
-    "grid_x": 0,
-    "grid_y": 2,
-    "grid_w": 2,
-    "grid_h": 1
-  },
-  {
-    "id": "calculator_button",
-    "index": 3,
-    "hue": 0.803030303030303,
-    "icon": "calculator.png",
-    "grid_x": 0,
-    "grid_y": 0,
+    "hue": 0.8106060606060606,
+    "icon": "world.png",
+    "grid_x": 3,
+    "grid_y": 1,
     "grid_w": 2,
     "grid_h": 2
   },
   {
     "id": "calculator_button",
-    "index": 4,
-    "hue": 0.2196969696969697,
-    "icon": null,
+    "index": 3,
+    "hue": 0.2803030303030303,
+    "icon": "calculator.png",
     "grid_x": 2,
-    "grid_y": 0,
-    "grid_w": 3,
-    "grid_h": 1
+    "grid_y": 1,
+    "grid_w": 1,
+    "grid_h": 2
   }
 ]

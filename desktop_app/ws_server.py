@@ -4,6 +4,10 @@ import queue
 from websockets import serve
 from threading import Thread
 
+import base64
+import os
+import copy
+
 from deck_area import CONFIG_PATH
 
 class WsServer:
@@ -18,13 +22,30 @@ class WsServer:
         self._running = False
         self.event_queue = queue.Queue()
 
+    def encode_data(self, data):
+        result = copy.deepcopy(data)
+        for i in result:
+            icon_path = i.get("icon", "")
+            if icon_path:
+                abs_path = os.path.join("assets", icon_path)
+                try:
+                    with open(abs_path, "rb") as img_file:
+                        b64_icon = base64.b64encode(img_file.read()).decode("utf-8")
+                    i["icon"] = b64_icon
+                except Exception:
+                    i["icon"] = ""
+            else:
+                i["icon"] = ""
+        return result
+
     async def _handler(self, websocket, path):
         self._clients.add(websocket)
         try:
             try:
-                with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
-                    area_state_cmd = {'cmd': 'area_state', 'data': json.load(f)}
-            except:
+                with open(CONFIG_PATH, 'r', encoding='utf-8') as file:
+                    data = self.encode_data(json.load(file))
+                    area_state_cmd = {'cmd': 'area_state', 'data': data}
+            except Exception as e:
                 area_state_cmd = {'cmd': 'area_state', 'data': {}}
             await websocket.send(json.dumps(area_state_cmd))
             async for message in websocket:
@@ -71,10 +92,28 @@ class WsServer:
     def stop(self):
         if not self._loop:
             return
-        self._loop.call_soon_threadsafe(self._loop.stop)
-        self._running = False
-        if self._thread:
-            self._thread.join(timeout=1)
+
+        async def shutdown():
+            # закрываем всех клиентов
+            for ws in list(self._clients):
+                try:
+                    await ws.close(code=1000, reason="Server shutdown")
+                except:
+                    pass
+                
+            await asyncio.sleep(0.05)
+
+            tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
+            for t in tasks:
+                t.cancel()
+            await asyncio.gather(*tasks, return_exceptions=True)
+
+            self._loop.stop()
+
+        asyncio.run_coroutine_threadsafe(shutdown(), self._loop)
+        self._thread.join(timeout=1)
+
+
 
     def send_to_all(self, message: dict):
         if not self._clients or not self._loop:

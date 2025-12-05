@@ -1,4 +1,5 @@
 import json
+from kivy.app import App
 
 class WebSocketClient:
     def __init__(self, uri):
@@ -10,21 +11,29 @@ class WebSocketClient:
         self.connection = await connect(self.uri)
         return self.connection
 
-    async def send(self, message):
+    async def send(self, message: dict):
         if self.connection is None:
             await self.connect()
-        if isinstance(message, (dict, list)):
-            message = json.dumps(message)
+        message = json.dumps(message)
         await self.connection.send(message)
 
     async def receive(self):
         if self.connection is None:
             await self.connect()
-        response = await self.connection.recv()
         try:
-            return json.loads(response)
-        except Exception:
-            return response
+            response = await self.connection.recv()
+            try:
+                return json.loads(response)
+            except Exception:
+                return response
+        except Exception as e:
+            # Проверяем, закрыто ли соединение сервером
+            if hasattr(self.connection, 'close_code') and self.connection.close_code is not None:
+
+                App.get_running_app().on_disconnect()
+            else:
+                print(f"[WebSocket] Ошибка при получении: {e}")
+            raise
 
     async def close(self):
         if self.connection:
@@ -74,6 +83,10 @@ def is_connected(host="8.8.8.8", port=53, timeout=3):
 
 def connect_wifi(ssid, password=None):
     try:
+        subprocess.run(
+            ["nmcli", "connection", "delete", ssid],
+            capture_output=True, text=True
+        )
         if password:
             result = subprocess.run(
                 ["nmcli", "dev", "wifi", "connect", ssid, "password", password],

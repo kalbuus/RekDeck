@@ -15,11 +15,13 @@ class WifiConnectionScreen(Screen):
         super().__init__(**kwargs)
     
     def on_enter(self, *args):
+        self.try_connect()
+    
+    def try_connect(self):
         if is_connected():
+            print("connecting")
             self.try_finding_server()
         else:
-            # Ожидаем, что ssid и пароль заданы извне перед вызовом
-            # если их нет — показываем экран выбора
             App.get_running_app().sm.current = "wifi_select"
 
     def try_finding_server(self):
