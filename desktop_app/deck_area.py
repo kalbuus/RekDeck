@@ -13,7 +13,6 @@ class DeckArea(FloatLayout):
         for btn in self.active_buttons:
             if btn.index == 0: # не изменённое значение
                 continue
-            print(btn.image_source)
             btn_data = {
                 'id': getattr(btn, 'button_id', None),
                 'index': btn.index,
@@ -51,12 +50,13 @@ class DeckArea(FloatLayout):
             btn_info = None
             kwargs = {
                 'button_id': btn_data.get('id'),
+                'index': btn_data.get('index'),
                 'hue': btn_data.get('hue', 0.1),
                 'grid_x': btn_data.get('grid_x', 0),
                 'grid_y': btn_data.get('grid_y', 0),
                 'grid_w': btn_data.get('grid_w', 1),
                 'grid_h': btn_data.get('grid_h', 1),
-                'image_source': btn_data.get('icon', ''),
+                'image_source': btn_data.get('icon', '')
             }
             btn = DeckButton(grid_widget=self.grid, **kwargs)
             self.add_widget(btn)
@@ -84,6 +84,11 @@ class DeckArea(FloatLayout):
         self.active_buttons.append(btn)
         self.save_preset_to_json()
         return btn
+    
+    def press_button_by_index(self, index):
+        for i in self.active_buttons:
+            if i.index == index:
+                App.get_running_app().widgets_manager.all_buttons[i.button_id].on_press()
 
     def check_collision(self, btn, gx, gy, gw, gh):
         for b in self.active_buttons:

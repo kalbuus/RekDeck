@@ -34,6 +34,7 @@ class DeckArea(FloatLayout):
             kwargs = {
                 'button_id': btn_data.get('id'),
                 'hue': btn_data.get('hue', 0.1),
+                'index': btn_data.get('index', 0),
                 'grid_x': btn_data.get('grid_x', 0),
                 'grid_y': btn_data.get('grid_y', 0),
                 'grid_w': btn_data.get('grid_w', 1),

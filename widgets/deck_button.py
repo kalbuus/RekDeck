@@ -4,6 +4,7 @@ from kivy.properties import NumericProperty, BooleanProperty, ObjectProperty, St
 from kivy.clock import Clock
 from kivy.animation import Animation
 from kivy.app import App
+from screens.wifi_connection_screen import WifiConnectionScreen
 
 class DeckButton(Widget):
     def on_hue(self, instance, value):
@@ -16,6 +17,7 @@ class DeckButton(Widget):
     icon_fit_button = BooleanProperty(False)
 
     button_id = StringProperty(None)
+    index = NumericProperty(0)
 
     grid_x = NumericProperty(0)
     grid_y = NumericProperty(0)
@@ -81,7 +83,7 @@ class DeckButton(Widget):
             try:
                 Animation.cancel_all(self, 'anim_color')
                 Animation(anim_color=self.get_hsv_color(True), d=0.08, t='out_quad').start(self)
-                
+                WifiConnectionScreen.send_message({"cmd": "button_press", "data": self.index})
             except Exception:
                 pass
             return True

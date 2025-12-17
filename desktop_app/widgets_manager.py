@@ -23,7 +23,7 @@ class WidgetsManager:
             for attr_name in dir(module):
                 attr = getattr(module, attr_name)
                 if isinstance(attr, type) and hasattr(attr, "on_press"):
-                    button_classes[attr.id] = attr
+                    button_classes[attr.id] = attr()
         print(f"Загружено {len(button_classes)} виджетов!")
         return button_classes
     

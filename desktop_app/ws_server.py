@@ -10,6 +10,8 @@ import copy
 
 from deck_area import CONFIG_PATH
 
+from kivy.app import App
+
 class WsServer:
     def __init__(self, host="0.0.0.0", port=8765, app=None):
         self.host = host
@@ -55,7 +57,10 @@ class WsServer:
                     await websocket.send(json.dumps({'error': 'invalid json'}))
                     continue
                 cmd = data.get('cmd')
-                
+                if cmd == "button_press":
+                    deck_area = App.get_running_app().layout.deck_area
+                    deck_area.press_button_by_index(data.get('data'))
+
         finally:
             self._clients.remove(websocket)
     

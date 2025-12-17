@@ -9,6 +9,19 @@ from interaction_managers.network_manager import *
 class WifiConnectionScreen(Screen):
     show_popup = BooleanProperty()
     popup_text = StringProperty()
+    def send_message(message):
+        import asyncio
+        layout = App.get_running_app().root.main_layout
+        server = getattr(layout, 'server', None)
+        if server is not None:
+            loop = None
+            try:
+                loop = asyncio.get_event_loop()
+            except RuntimeError:
+                pass
+            if loop and loop.is_running():
+                asyncio.run_coroutine_threadsafe(server.send(message), loop)
+    
     def __init__(self, **kwargs):
         self.show_popup = False
         self.popup_text = "Не удалось подключиться к сети"
@@ -46,6 +59,8 @@ class WifiConnectionScreen(Screen):
                     except Exception as e:
                         print(f"WS error: {e}")
                         break
+            # Сохраняем loop для дальнейших отправок
+            layout._ws_loop = loop
             loop.run_until_complete(ws_main())
 
         def run_async():
