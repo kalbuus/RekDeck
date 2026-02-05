@@ -6,6 +6,7 @@ import os
 class BlenderButton(bb.BaseButton):
     id: str = "blender_button"
     name: str = "Open Blender"
+    category_id: str = "apps"
     icon: str = None
     def __init__(self, **kwargs):
         super().__init__()

@@ -39,12 +39,22 @@
             pos_hint: {"center_x":.5, "center_y":.65}
             font_size: 30
         
-        Button:
-            text: "Назад"
-            size_hint: [0.4, 0.2] if root.show_popup else [0, 0]
+        BoxLayout:
+            size_hint: [0.8, 0.2] if root.show_popup else [0, 0]
             opacity: 1 if root.show_popup else 0
             disabled: False if root.show_popup else True
-            pos_hint: {"center_x":.5, "center_y":.4}
-            on_press: app.sm.current = "wifi_select"; root.show_popup = False
-            
+            pos_hint: {"center_x": .5, "center_y": .35}
+            spacing: 20
+
+            Button:
+                text: "Попытаться снова"
+                on_press:
+                    root.show_popup = False
+                    root.try_connect()
+
+            Button:
+                text: "Сменить сеть"
+                on_press:
+                    app.sm.current = "wifi_select"
+                    root.show_popup = False
     

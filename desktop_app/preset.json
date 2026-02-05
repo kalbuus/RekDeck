@@ -4,29 +4,79 @@
     "index": 1,
     "hue": 0.5681818181818182,
     "icon": "blender_png.png",
-    "grid_x": 3,
-    "grid_y": 0,
-    "grid_w": 1,
-    "grid_h": 1
-  },
-  {
-    "id": "substance_painter_button",
-    "index": 2,
-    "hue": 0.6515151515151515,
-    "icon": "substance_painter.png",
     "grid_x": 4,
     "grid_y": 0,
     "grid_w": 1,
     "grid_h": 1
   },
   {
-    "id": "calculator_button",
+    "id": "blender_cube",
+    "index": 2,
+    "hue": 0.0,
+    "icon": "cube.png",
+    "grid_x": 0,
+    "grid_y": 0,
+    "grid_w": 1,
+    "grid_h": 1
+  },
+  {
+    "id": "blender_plane",
     "index": 3,
-    "hue": 0.44696969696969696,
-    "icon": "calculator.png",
-    "grid_x": 3,
+    "hue": 0.0,
+    "icon": "plane.png",
+    "grid_x": 1,
+    "grid_y": 0,
+    "grid_w": 1,
+    "grid_h": 1
+  },
+  {
+    "id": "blender_sun",
+    "index": 4,
+    "hue": 0.0,
+    "icon": "sun.png",
+    "grid_x": 0,
+    "grid_y": 1,
+    "grid_w": 1,
+    "grid_h": 1
+  },
+  {
+    "id": "blender_cam",
+    "index": 5,
+    "hue": 0.0,
+    "icon": "camera.png",
+    "grid_x": 1,
+    "grid_y": 1,
+    "grid_w": 1,
+    "grid_h": 1
+  },
+  {
+    "id": "blender_subd",
+    "index": 6,
+    "hue": 0.3181818181818182,
+    "icon": "subd.png",
+    "grid_x": 0,
     "grid_y": 2,
     "grid_w": 2,
+    "grid_h": 1
+  },
+  {
+    "id": "blender_mirror",
+    "index": 7,
+    "hue": 0.6742424242424242,
+    "icon": "flip-horizontal.png",
+    "grid_x": 3,
+    "grid_y": 1,
+    "grid_w": 2,
+    "grid_h": 2
+  },
+  {
+    "id": "blender_material",
+    "index": 8,
+    "hue": 0.1893939393939394,
+    "icon": "material.png",
+    "grid_x": 3,
+    "grid_y": 0,
+    "grid_w": 1,
     "grid_h": 1
   }
 ]

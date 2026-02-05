@@ -2,7 +2,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import BooleanProperty, StringProperty
 from kivy.app import App
 from kivy.clock import Clock
-import json
+import time
 
 from interaction_managers.network_manager import *
 
@@ -64,17 +64,36 @@ class WifiConnectionScreen(Screen):
             loop.run_until_complete(ws_main())
 
         def run_async():
-            try:
-                server_ip = asyncio.run(find_server_on_lan())
-            except Exception:
-                server_ip = None
+            MAX_RETRIES = 5
+            DELAY = 2  # секунды между попытками
+
+            server_ip = None
+
+            for attempt in range(1, MAX_RETRIES + 1):
+                try:
+                    server_ip = asyncio.run(find_server_on_lan())
+                except Exception:
+                    server_ip = None
+
+                if server_ip:
+                    break
+                
+                print(f"Попытка {attempt} не удалась")
+                time.sleep(DELAY)
+
             def update():
                 if server_ip:
                     App.get_running_app().on_connect()
-                    threading.Thread(target=ws_thread, args=(server_ip,), daemon=True).start()
+                    threading.Thread(
+                        target=ws_thread,
+                        args=(server_ip,),
+                        daemon=True
+                    ).start()
                 else:
                     self.popup_text = "Сервер не найден в локальной сети"
-                self.show_popup = True
+                    self.show_popup = True
+
             Clock.schedule_once(lambda dt: update())
+
         threading.Thread(target=run_async, daemon=True).start()
         
