@@ -49,3 +49,5 @@ class BlenderMirrorButton(bb.BaseButton):
         keyboard.release(kb.Key.enter)
 
         return super().on_press()
+
+

@@ -1,0 +1,82 @@
+<BtConnectionScreen>:
+    name: "bt_connect"
+
+    FloatLayout:
+        BoxLayout:
+            canvas.before:
+                Color:
+                    rgba: .1, .1, .1, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+        Label:
+            text: "Поиск Bluetooth устройств..." if root.is_scanning else "Выберите устройство"
+            font_size: 24
+            pos_hint: {"center_x": .5, "center_y": .88}
+
+        Image:
+            source: 'assets/wifi_connection_screen/loading.gif'
+            opacity: 1 if root.is_scanning else 0
+            pos_hint: {"center_x": .5, "center_y": .55}
+            anim_delay: 0.02
+            size_hint: .3, .3
+
+        ScrollView:
+            size_hint: .85, .6
+            pos_hint: {"center_x": .5, "center_y": .5}
+            opacity: 0 if root.is_scanning else 1
+            disabled: root.is_scanning
+
+            GridLayout:
+                id: device_list
+                cols: 1
+                spacing: 8
+                size_hint_y: None
+                height: self.minimum_height
+                padding: [10, 10]
+
+        BoxLayout:
+            size_hint: .7, .5
+            pos_hint: {"center_x": .5, "center_y": .55}
+            canvas.before:
+                Color:
+                    rgba: [.2, .2, .2, 1] if root.show_popup else [0, 0, 0, 0]
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [15]
+
+        Label:
+            text: root.popup_text if root.show_popup else ""
+            size_hint: .7, .4
+            pos_hint: {"center_x": .5, "center_y": .65}
+            font_size: 24
+            text_size: self.size
+            halign: 'center'
+            valign: 'middle'
+
+        BoxLayout:
+            size_hint: [.75, .18] if root.show_popup else [0, 0]
+            opacity: 1 if root.show_popup else 0
+            disabled: 1 if root.show_popup == False else 0
+            pos_hint: {"center_x": .5, "center_y": .38}
+            spacing: 20
+
+            Button:
+                text: "Сканировать снова"
+                on_release:
+                    root.show_popup = False
+                    root.start_scan()
+
+            Button:
+                text: "Назад"
+                on_release: root.go_back()
+
+        Button:
+            text: "< Назад"
+            size_hint: .25, .1
+            pos_hint: {"x": .03, "y": .03}
+            opacity: 0 if root.is_scanning else 1
+            disabled: root.is_scanning
+            on_release: root.go_back()

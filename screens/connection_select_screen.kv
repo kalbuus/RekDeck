@@ -1,0 +1,32 @@
+<ConnectionSelectScreen>:
+    name: "connection_select"
+
+    FloatLayout:
+        BoxLayout:
+            canvas.before:
+                Color:
+                    rgba: .1, .1, .1, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+        Label:
+            text: "Как подключиться к RekDeck?"
+            font_size: 30
+            pos_hint: {"center_x": .5, "center_y": .75}
+
+        BoxLayout:
+            orientation: "vertical"
+            spacing: 20
+            size_hint: .6, .35
+            pos_hint: {"center_x": .5, "center_y": .4}
+
+            Button:
+                text: "Wi-Fi"
+                font_size: 26
+                on_release: root.go_wifi()
+
+            Button:
+                text: "Bluetooth"
+                font_size: 26
+                on_release: root.go_bluetooth()

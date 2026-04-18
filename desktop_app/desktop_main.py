@@ -32,6 +32,7 @@ from button_settings_menu import ButtonSettingsMenu
 
 from widgets_manager import WidgetsManager
 from ws_server import WsServer
+from bt_server import BtServer
 
 class MainLayout(BoxLayout):
     @property
@@ -103,6 +104,12 @@ class MainApp(App):
             self.ws_server.start()
         except Exception as e:
             print('Failed to start ws server:', e)
+        # Запускаем Bluetooth сервер
+        self.bt_server = BtServer(app=self)
+        try:
+            self.bt_server.start()
+        except Exception as e:
+            print('Failed to start bt server:', e)
         self.tray_icon = None
         Window.bind(on_request_close=self.on_request_close)
         # Загружаем все виджеты (кнопки)
@@ -160,6 +167,10 @@ class MainApp(App):
     def quit_app(self, icon, item):
         try:
             self.ws_server.stop()
+        except Exception:
+            pass
+        try:
+            self.bt_server.stop()
         except Exception:
             pass
         icon.stop()

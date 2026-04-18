@@ -14,6 +14,8 @@ from kivy.properties import StringProperty, BooleanProperty, ObjectProperty
 from screens.wifi_select_screen import WifiSelectScreen
 from screens.wifi_password_screen import WifiPasswordScreen
 from screens.wifi_connection_screen import WifiConnectionScreen
+from screens.connection_select_screen import ConnectionSelectScreen
+from screens.bt_connection_screen import BtConnectionScreen
 from widgets.networks_recycle_view import NetworksRecycleView, SelectableNetworkLabel
 from widgets.virtual_keyboard import VirtualKeyboard, KeyboardButton
 from interaction_managers.network_manager import WebSocketClient
@@ -39,12 +41,15 @@ class WifiLayout(BoxLayout):
     pass
 
 kv_file_count = 0
-for root, _, files in os.walk(os.getcwd()):
-    for file in files:
-        if file.endswith(".kv") and "desktop_app" not in root:
-            divider = "\\" if os.name == 'nt' else '/'
-            Builder.load_file(root + divider + file)
-            kv_file_count += 1
+for _kv_root, _, _kv_files in os.walk(os.getcwd()):
+    for _kv_file in _kv_files:
+        if _kv_file.endswith(".kv") and "desktop_app" not in _kv_root:
+            _kv_path = os.path.join(_kv_root, _kv_file)
+            try:
+                Builder.load_file(_kv_path)
+                kv_file_count += 1
+            except Exception as _kv_err:
+                print(f"[KV ERROR] {_kv_path}: {_kv_err}")
 
 print(f"Found and loaded {kv_file_count} .kv files!")
 
@@ -69,28 +74,26 @@ class StreamDeckApp(App):
 
         self.sm = self.root.ids.wifi_screen_manager
 
-        connected = is_connected()
-        
-        if not connected:
-            self.sm.add_widget(Factory.WifiSelectScreen(name="wifi_select"))
-            self.sm.add_widget(Factory.WifiPasswordScreen(name="wifi_password"))
-            self.sm.add_widget(Factory.WifiConnectionScreen(name="wifi_connect"))
-        else:
-            self.sm.add_widget(Factory.WifiConnectionScreen(name="wifi_connect"))
-            self.sm.add_widget(Factory.WifiPasswordScreen(name="wifi_password"))
-            self.sm.add_widget(Factory.WifiSelectScreen(name="wifi_select"))
-        
-        starting_page = "wifi_connect" if connected else "wifi_select"
-        
-        self.sm.current = starting_page
+        self.sm.add_widget(Factory.ConnectionSelectScreen(name="connection_select"))
+        self.sm.add_widget(Factory.WifiSelectScreen(name="wifi_select"))
+        self.sm.add_widget(Factory.WifiPasswordScreen(name="wifi_password"))
+        self.sm.add_widget(Factory.WifiConnectionScreen(name="wifi_connect"))
+        self.sm.add_widget(Factory.BtConnectionScreen(name="bt_connect"))
+
+        self.sm.current = "connection_select"
         return self.root
     
+    def on_start(self):
+        from kivy.clock import Clock
+        from kivy.core.window import Window
+        Clock.schedule_once(lambda _: Window.canvas.ask_update(), 0.5)
+
     def on_connect(self):
         self.root.remove_widget(self.root.ids.wifi_layout)
 
     def on_disconnect(self):
         self.root.add_widget(self.root.ids.wifi_layout)
-        self.sm.current = "wifi_connect"
+        self.sm.current = "connection_select"
 
 
 def main():

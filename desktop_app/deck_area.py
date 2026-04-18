@@ -25,10 +25,11 @@ class DeckArea(FloatLayout):
             }
             data.append(btn_data)
         
-        server = App.get_running_app().ws_server
-
-        if server:
-            server.send_to_all({'cmd': "area_state", 'data': server.encode_data(data)})
+        app = App.get_running_app()
+        if app.ws_server:
+            app.ws_server.send_to_all({'cmd': "area_state", 'data': app.ws_server.encode_data(data)})
+        if hasattr(app, 'bt_server') and app.bt_server:
+            app.bt_server.send_to_all({'cmd': "area_state", 'data': app.bt_server.encode_data(data)})
         
         with open(CONFIG_PATH, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)

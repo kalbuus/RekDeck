@@ -64,7 +64,7 @@ class WifiConnectionScreen(Screen):
             loop.run_until_complete(ws_main())
 
         def run_async():
-            MAX_RETRIES = 5
+            MAX_RETRIES = 3
             DELAY = 2  # секунды между попытками
 
             server_ip = None
@@ -80,6 +80,8 @@ class WifiConnectionScreen(Screen):
                 
                 print(f"Попытка {attempt} не удалась")
                 time.sleep(DELAY)
+            if not server_ip:
+                Clock.schedule_once(lambda dt: update())
 
             def update():
                 if server_ip:
