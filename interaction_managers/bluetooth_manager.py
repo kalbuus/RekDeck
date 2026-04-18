@@ -28,8 +28,18 @@ class BluetoothClient:
 
     def connect(self):
         import bluetooth
+        import re
+        # pybluez2 bug: is_valid_uuid missing in some builds
+        if not hasattr(bluetooth, "is_valid_uuid"):
+            bluetooth.is_valid_uuid = lambda u: bool(re.match(
+                r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                str(u).lower()))
+        services = bluetooth.find_service(uuid=BT_UUID, address=self.addr)
+        if not services:
+            raise ConnectionError(f"RekDeck service not found on {self.addr}")
+        port = services[0]["port"]
         self._sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-        self._sock.connect((self.addr, 1))
+        self._sock.connect((self.addr, port))
 
     def send(self, message: dict):
         if self._sock is None:
