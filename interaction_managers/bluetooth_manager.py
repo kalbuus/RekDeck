@@ -28,12 +28,8 @@ class BluetoothClient:
 
     def connect(self):
         import bluetooth
-        services = bluetooth.find_service(uuid=BT_UUID, address=self.addr)
-        if not services:
-            raise ConnectionError(f"RekDeck service not found on {self.addr}")
-        port = services[0]["port"]
         self._sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-        self._sock.connect((self.addr, port))
+        self._sock.connect((self.addr, 1))
 
     def send(self, message: dict):
         if self._sock is None:

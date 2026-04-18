@@ -112,17 +112,9 @@ class BtServer:
 
         try:
             self._server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-            self._server_sock.bind(("", bluetooth.PORT_ANY))
+            self._server_sock.bind(("", 1))
             self._server_sock.listen(5)
-            port = self._server_sock.getsockname()[1]
-            bluetooth.advertise_service(
-                self._server_sock,
-                BT_SERVICE_NAME,
-                service_id=BT_UUID,
-                service_classes=[BT_UUID, bluetooth.SERIAL_PORT_CLASS],
-                profiles=[bluetooth.SERIAL_PORT_PROFILE],
-            )
-            print(f"[BtServer] Listening on RFCOMM port {port}, UUID={BT_UUID}")
+            print(f"[BtServer] Listening on RFCOMM port 1")
         except Exception as e:
             print(f"[BtServer] Failed to start: {e}")
             return

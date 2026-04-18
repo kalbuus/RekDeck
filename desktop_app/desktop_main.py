@@ -104,12 +104,14 @@ class MainApp(App):
             self.ws_server.start()
         except Exception as e:
             print('Failed to start ws server:', e)
-        # Запускаем Bluetooth сервер
-        self.bt_server = BtServer(app=self)
+        # Запускаем Bluetooth сервер (опционально — пропускаем если нет BT-адаптера)
+        self.bt_server = None
         try:
+            self.bt_server = BtServer(app=self)
             self.bt_server.start()
         except Exception as e:
-            print('Failed to start bt server:', e)
+            self.bt_server = None
+            print(f'[BT] Server not available: {e}')
         self.tray_icon = None
         Window.bind(on_request_close=self.on_request_close)
         # Загружаем все виджеты (кнопки)
