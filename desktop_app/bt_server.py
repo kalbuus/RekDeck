@@ -10,6 +10,7 @@ from kivy.app import App
 
 BT_UUID = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
 BT_SERVICE_NAME = "RekDeck"
+BT_RFCOMM_PORT = 4
 
 
 class BtServer:
@@ -103,6 +104,15 @@ class BtServer:
         except Exception:
             pass
 
+    def _enable_discoverability(self):
+        try:
+            import ctypes
+            bthprops = ctypes.WinDLL("bthprops.cpl")
+            bthprops.BluetoothEnableDiscovery(None, True)
+            print("[BtServer] Windows Bluetooth discoverability enabled.")
+        except Exception as e:
+            print(f"[BtServer] Could not enable discoverability: {e}")
+
     def _run(self):
         try:
             import bluetooth
@@ -110,11 +120,19 @@ class BtServer:
             print("[BtServer] pybluez2 not installed. Bluetooth server unavailable.")
             return
 
+        self._enable_discoverability()
+
         try:
             self._server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-            self._server_sock.bind(("", bluetooth.PORT_ANY))
+            self._server_sock.bind(("", BT_RFCOMM_PORT))
             self._server_sock.listen(5)
             port = self._server_sock.getsockname()[1]
+            print(f"[BtServer] Socket bound on RFCOMM port {port}")
+        except Exception as e:
+            print(f"[BtServer] Failed to create socket: {e}")
+            return
+
+        try:
             bluetooth.advertise_service(
                 self._server_sock,
                 BT_SERVICE_NAME,
@@ -122,10 +140,11 @@ class BtServer:
                 service_classes=[BT_UUID, bluetooth.SERIAL_PORT_CLASS],
                 profiles=[bluetooth.SERIAL_PORT_PROFILE],
             )
-            print(f"[BtServer] Listening on RFCOMM port {port}, UUID={BT_UUID}")
+            print(f"[BtServer] SDP service advertised, UUID={BT_UUID}")
         except Exception as e:
-            print(f"[BtServer] Failed to start: {e}")
-            return
+            print(f"[BtServer] SDP advertisement failed (Pi will use fixed port {BT_RFCOMM_PORT}): {e}")
+
+        print(f"[BtServer] Listening on RFCOMM port {port}")
 
         self._running = True
         threading.Thread(target=self._broadcast_loop, daemon=True).start()
