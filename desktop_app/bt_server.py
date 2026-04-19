@@ -10,7 +10,6 @@ from kivy.app import App
 
 BT_UUID = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
 BT_SERVICE_NAME = "RekDeck"
-BT_RFCOMM_PORT = 4
 
 
 class BtServer:
@@ -124,7 +123,7 @@ class BtServer:
 
         try:
             self._server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-            self._server_sock.bind(("", BT_RFCOMM_PORT))
+            self._server_sock.bind(("", bluetooth.PORT_ANY))
             self._server_sock.listen(5)
             port = self._server_sock.getsockname()[1]
             print(f"[BtServer] Socket bound on RFCOMM port {port}")
@@ -142,7 +141,8 @@ class BtServer:
             )
             print(f"[BtServer] SDP service advertised, UUID={BT_UUID}")
         except Exception as e:
-            print(f"[BtServer] SDP advertisement failed (Pi will use fixed port {BT_RFCOMM_PORT}): {e}")
+            print(f"[BtServer] SDP advertisement failed — Pi won't be able to connect. "
+                  f"Try running as Administrator. Error: {e}")
 
         print(f"[BtServer] Listening on RFCOMM port {port}")
 

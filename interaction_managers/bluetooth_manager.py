@@ -2,7 +2,6 @@ import json
 import os
 
 BT_UUID = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
-BT_RFCOMM_PORT = 4
 
 
 def scan_bt_devices(is_debug: bool = False):
@@ -35,16 +34,16 @@ class BluetoothClient:
             bluetooth.is_valid_uuid = lambda u: bool(re.match(
                 r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
                 str(u).lower()))
-        port = None
         try:
             services = bluetooth.find_service(uuid=BT_UUID, address=self.addr)
-            if services:
-                port = services[0]["port"]
         except Exception as e:
-            print(f"[BT] SDP lookup failed: {e}")
-        if port is None:
-            print(f"[BT] Falling back to fixed RFCOMM port {BT_RFCOMM_PORT}")
-            port = BT_RFCOMM_PORT
+            raise ConnectionError(f"SDP lookup failed: {e}") from e
+        if not services:
+            raise ConnectionError(
+                "RekDeck service not found on this device.\n"
+                "Make sure the desktop app is running as Administrator."
+            )
+        port = services[0]["port"]
         self._sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
         self._sock.connect((self.addr, port))
 
