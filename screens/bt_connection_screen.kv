@@ -13,7 +13,15 @@
         Label:
             text: "Поиск Bluetooth устройств..." if root.is_scanning else "Выберите устройство"
             font_size: 24
-            pos_hint: {"center_x": .5, "center_y": .88}
+            pos_hint: {"center_x": .5, "center_y": .95}
+
+        Label:
+            text: root.discover_status
+            font_size: 14
+            color: .6, 1, .6, 1
+            halign: "center"
+            text_size: self.width, None
+            pos_hint: {"center_x": .5, "center_y": .85}
 
         Image:
             source: 'assets/wifi_connection_screen/loading.gif'

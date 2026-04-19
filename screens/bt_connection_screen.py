@@ -5,14 +5,17 @@ from kivy.properties import BooleanProperty, StringProperty, ListProperty
 from kivy.app import App
 from kivy.clock import Clock
 
-from interaction_managers.bluetooth_manager import scan_bt_devices, BluetoothClient
+from interaction_managers.bluetooth_manager import scan_bt_devices, BluetoothClient, start_bt_agent
 
 
 class BtConnectionScreen(Screen):
     is_scanning = BooleanProperty(False)
     show_popup = BooleanProperty(False)
     popup_text = StringProperty("")
+    discover_status = StringProperty("")
     devices = ListProperty([])  # list of {'addr': str, 'name': str}
+
+    _agent_proc = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -20,7 +23,22 @@ class BtConnectionScreen(Screen):
     def on_enter(self, *args):
         self.show_popup = False
         self.devices = []
+        self.discover_status = "Starting BT agent..."
+        threading.Thread(target=self._enable_discover_thread, daemon=True).start()
         self.start_scan()
+
+    def on_leave(self, *args):
+        if self._agent_proc:
+            try:
+                self._agent_proc.terminate()
+            except Exception:
+                pass
+            self._agent_proc = None
+
+    def _enable_discover_thread(self):
+        proc, status = start_bt_agent()
+        self._agent_proc = proc
+        Clock.schedule_once(lambda dt: setattr(self, "discover_status", status))
 
     def start_scan(self):
         self.is_scanning = True

@@ -4,6 +4,54 @@ import os
 BT_UUID = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
 
 
+def start_bt_agent() -> tuple:
+    """Start a bluetoothctl agent that auto-confirms pairing requests.
+    Returns (proc, status_message)."""
+    import subprocess
+    import threading
+    addr = _get_local_bt_address()
+    try:
+        proc = subprocess.Popen(
+            ["bluetoothctl"],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        proc.stdin.write(b"agent on\ndefault-agent\npairable on\ndiscoverable on\n")
+        proc.stdin.flush()
+
+        def _auto_confirm():
+            while True:
+                try:
+                    line = proc.stdout.readline()
+                    if not line:
+                        break
+                    text = line.decode("utf-8", errors="ignore").strip()
+                    print(f"[BT agent] {text}")
+                    if any(kw in text.lower() for kw in ["confirm", "authorize", "yes/no"]):
+                        proc.stdin.write(b"yes\n")
+                        proc.stdin.flush()
+                except Exception:
+                    break
+
+        threading.Thread(target=_auto_confirm, daemon=True).start()
+        return proc, f"Pi is visible & pairable\nAddr: {addr}\nPair from Windows Bluetooth settings"
+    except Exception as e:
+        return None, f"Could not start BT agent:\n{e}\nAddr: {addr}"
+
+
+def _get_local_bt_address() -> str:
+    import subprocess
+    try:
+        r = subprocess.run(["hciconfig", "hci0"], capture_output=True, text=True, timeout=5)
+        for line in r.stdout.splitlines():
+            if "BD Address" in line:
+                return line.split()[2]
+    except Exception:
+        pass
+    return "unknown"
+
+
 def scan_bt_devices(is_debug: bool = False):
     """Return a list of nearby Bluetooth devices: [{'addr': str, 'name': str}]"""
     if is_debug:
@@ -27,13 +75,18 @@ class BluetoothClient:
         self._buf = ""
 
     def connect(self):
+        import socket
         import bluetooth
         import re
-        # pybluez2 bug: is_valid_uuid missing in some builds
-        if not hasattr(bluetooth, "is_valid_uuid"):
-            bluetooth.is_valid_uuid = lambda u: bool(re.match(
-                r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
-                str(u).lower()))
+        import sys
+        # pybluez2 bug: is_valid_uuid missing in some builds.
+        _uuid_pat = re.compile(
+            r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+        )
+        _is_valid_uuid = lambda u: bool(_uuid_pat.match(str(u).lower()))
+        for _mod in sys.modules.values():
+            if getattr(_mod, "__name__", "").startswith("bluetooth") and not hasattr(_mod, "is_valid_uuid"):
+                _mod.is_valid_uuid = _is_valid_uuid
         try:
             services = bluetooth.find_service(uuid=BT_UUID, address=self.addr)
         except Exception as e:
@@ -44,7 +97,10 @@ class BluetoothClient:
                 "Make sure the desktop app is running as Administrator."
             )
         port = services[0]["port"]
-        self._sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+        print(f"[BT] Connecting to {self.addr} on RFCOMM port {port}")
+        # Use standard socket instead of pybluez2's BluetoothSocket — on BlueZ 5 the
+        # raw pybluez2 socket bypasses the daemon and fails on paired devices.
+        self._sock = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_STREAM, socket.BTPROTO_RFCOMM)
         self._sock.connect((self.addr, port))
 
     def send(self, message: dict):

@@ -88,8 +88,14 @@ class BtServer:
                         continue
                     cmd = data.get("cmd")
                     if cmd == "button_press":
-                        deck_area = App.get_running_app().layout.deck_area
-                        deck_area.press_button_by_index(data.get("data"))
+                        idx = data.get("data")
+                        try:
+                            from kivy.clock import Clock
+                            Clock.schedule_once(
+                                lambda dt, i=idx: App.get_running_app().layout.deck_area.press_button_by_index(i)
+                            )
+                        except Exception as e:
+                            print(f"[BtServer] button_press error: {e}")
             except Exception:
                 break
 
